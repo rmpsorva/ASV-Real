@@ -1,0 +1,93 @@
+#!/bin/bash
+# ===============================================================
+# 🚀 ASV-A START ORCHESTRATOR - para asva_universal_key.py
+# Inicia, instala y gestiona la llave universal Python.
+# ===============================================================
+
+set -euo pipefail
+
+# --- CONFIGURACIÓN Y COLORES ---
+BACKEND_PORT="5000"
+CYBER_GREEN='\033[1;32m'
+CYBER_RED='\033[0;31m'
+NC='\033[0m'
+
+log() { echo -e "${CYBER_GREEN}⚡ $1${NC}" ; }
+error() { echo -e "${CYBER_RED}💥 $1${NC}" ; }
+
+# --- FUNCIONES DE GESTIÓN ---
+
+install_and_start() {
+    log "Verificando dependencias Python..."
+    # Instalar Flask y requests (es la dependencia de la Llave Universal)
+    pip install Flask requests || { error "Fallo: No se pudo instalar Flask/requests. Asegúrate de tener pip/Python."; exit 1; }
+
+    log "Verificando Assets..."
+    # Crear carpeta 'assets' si no existe
+    mkdir -p assets
+    if [ ! -f "assets/IMG_2280.jpeg" ]; then
+        warning "⚠️ Falta 'assets/IMG_2280.jpeg'. La interfaz funcionará, pero las imágenes no se cargarán."
+    else
+        log "✓ Imagen de Assets encontrada."
+    fi
+
+    log "Iniciando Llave Universal Python en http://localhost:${BACKEND_PORT}..."
+    
+    # Iniciar Flask en segundo plano (para dejar la terminal libre para Ollama)
+    nohup python asva_universal_key.py > asva_flask_key.log 2>&1 &
+    FLASK_PID=$!
+    echo "$FLASK_PID" > asva_flask_key.pid
+    
+    log "Llave Universal (Flask) iniciada con PID $FLASK_PID."
+    sleep 3
+
+    echo ""
+    echo -e "${CYBER_GREEN}========================================================================${NC}"
+    echo -e "${CYBER_GREEN}🎉 LLAVE UNIVERSAL ACTIVA. ACCESO: http://localhost:${BACKEND_PORT} 🎉${NC}"
+    echo -e "${CYBER_GREEN}========================================================================${NC}"
+    echo " "
+    echo "➡️ PRÓXIMO PASO: RESUELVE EL PROBLEMA DE OLLAMA EN OTRA TERMINAL."
+    echo "--------------------------------------------------------"
+    echo "1. Abrir NUEVA Terminal."
+    echo "2. Ejecutar comandos Ollama:"
+    echo "   curl -fsSL https://ollama.com/install.sh | sh"
+    echo "   ollama serve &"
+    echo "   ollama pull llama3"
+    echo "--------------------------------------------------------"
+}
+
+stop_system() {
+    log "Deteniendo servicios de la Llave Universal..."
+    
+    if [ -f "asva_flask_key.pid" ]; then
+        local flask_pid=$(cat asva_flask_key.pid)
+        kill $flask_pid 2>/dev/null && log "Llave Universal (Flask) detenida." || warning "Flask no encontrado."
+        rm asva_flask_key.pid
+    fi
+    
+    # Detener Ollama (si está corriendo)
+    pkill -f "ollama serve" 2>/dev/null && log "Servicio Ollama detenido." || true
+    
+    log "Limpieza completada."
+}
+
+# --- FUNCIÓN PRINCIPAL ---
+main() {
+    local command="${1:-}"
+    
+    case "$command" in
+        "start")
+            install_and_start
+            ;;
+        "stop")
+            stop_system
+            ;;
+        *)
+            echo "USO: $0 [start|stop]"
+            echo "  start - Instala Flask, lanza la Llave Universal y da instrucciones Ollama."
+            echo "  stop  - Detiene la Llave Universal y Ollama."
+            ;;
+    esac
+}
+
+main "$@"
