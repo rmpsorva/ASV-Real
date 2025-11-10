@@ -1,4 +1,512 @@
-/* ===== ESTILOS COGNITIVOS ASV-A AURION ===== */
+/* /* =============================================== */
+/* GLOBAL STYLES & FONTS (ASV-A Cyberpunk) */
+/* =============================================== */
+:root {
+    --bg-dark: #0a0a1a;
+    --bg-panel: rgba(10, 20, 30, 0.8); /* Fondo de panel más oscuro */
+    --border-neon-blue: #00f0ff;
+    --border-neon-green: #00ff88;
+    --text-light-blue: #66f0ff;
+    --text-neon-green: #00ff88;
+    --text-orange: #ffaa00;
+    --text-red: #ff4444;
+    --font-header: 'Orbitron', sans-serif;
+    --font-body: 'Share Tech Mono', monospace;
+    --box-shadow-neon: 0 0 8px rgba(0, 240, 255, 0.6);
+    --box-shadow-neon-green: 0 0 8px rgba(0, 255, 136, 0.6);
+    --button-bg-primary: rgba(0, 150, 255, 0.3);
+    --button-bg-secondary: rgba(100, 100, 100, 0.3);
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--text-light-blue);
+    background: radial-gradient(circle at center, #010110 0%, #000000 100%); /* Fondo degradado */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    padding: 20px;
+    box-sizing: border-box;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM2Njk5ZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRMOCAyNFYwSDYzNnYzNiIKLz48L2c+PC9nPjwvc3ZnPg=='); /* Patrón de rejilla sutil */
+    background-size: 40px 40px;
+}
+
+/* =============================================== */
+/* LAYOUT PRINCIPAL */
+/* =============================================== */
+.system-container {
+    width: 100%;
+    max-width: 1400px; /* Ajustado para pantallas grandes */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    border: 2px solid var(--border-neon-blue);
+    box-shadow: var(--box-shadow-neon);
+    background-color: var(--bg-dark);
+    position: relative;
+}
+
+/* Pseudo-elementos para el efecto de borde brillante */
+.system-container::before, .system-container::after {
+    content: '';
+    position: absolute;
+    top: -5px; left: -5px; right: -5px; bottom: -5px;
+    background: linear-gradient(45deg, #00f0ff, #00ff88, #00f0ff);
+    z-index: -1;
+    filter: blur(5px);
+    opacity: 0.5;
+}
+.system-container::after {
+    filter: blur(10px);
+    opacity: 0.3;
+}
+
+.header-display {
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--border-neon-blue);
+}
+
+.header-title {
+    font-family: var(--font-header);
+    font-size: 2.2em;
+    color: var(--text-neon-green);
+    text-shadow: 0 0 10px var(--text-neon-green);
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.header-subtitle {
+    font-size: 0.9em;
+    color: var(--text-light-blue);
+    margin: 5px 0 0;
+}
+
+.active-status {
+    color: var(--text-neon-green);
+    animation: pulse-neon 1.5s infinite alternate;
+}
+
+@keyframes pulse-neon {
+    from { opacity: 0.7; text-shadow: 0 0 5px var(--text-neon-green); }
+    to { opacity: 1; text-shadow: 0 0 15px var(--text-neon-green); }
+}
+
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr; /* Izquierda, Centro, Derecha */
+    gap: 20px;
+    flex-grow: 1;
+}
+
+.panel {
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-neon-blue);
+    padding: 15px;
+    box-shadow: var(--box-shadow-neon);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: relative;
+    overflow: hidden; /* Para los efectos de fondo */
+}
+
+/* Efecto de ruido en los paneles */
+.panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFe7QNGAAAAGHRSTl'AAAC/sAAAAOAAAAeAAAAAABgAAAA==') repeat; /* Imagen de ruido */
+    opacity: 0.05;
+    pointer-events: none;
+}
+
+.section-title {
+    font-family: var(--font-header);
+    color: var(--text-neon-green);
+    text-shadow: 0 0 5px var(--text-neon-green);
+    font-size: 1.1em;
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+    letter-spacing: 1px;
+}
+
+/* =============================================== */
+/* SECCIÓN IZQUIERDA: AVATAR & ANÁLISIS */
+/* =============================================== */
+.left-panel .panel-section {
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    padding: 10px;
+    margin-bottom: 15px;
+}
+.left-panel .panel-section:last-child {
+    margin-bottom: 0;
+}
+
+.avatar-status .status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.status-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.85em;
+}
+.status-item .label {
+    color: var(--text-light-blue);
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.status-item .value {
+    color: var(--text-neon-green);
+    font-family: var(--font-header);
+    font-size: 1.1em;
+}
+
+.power-indicator .value {
+    color: var(--text-neon-green);
+    animation: power-pulse 2s infinite alternate;
+}
+@keyframes power-pulse {
+    from { color: rgba(0, 255, 136, 0.7); }
+    to { color: var(--text-neon-green); text-shadow: 0 0 5px var(--text-neon-green); }
+}
+
+.connect-wallet-button {
+    background: var(--button-bg-primary);
+    border: 1px solid var(--border-neon-blue);
+    color: var(--text-light-blue);
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: var(--font-body);
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+.connect-wallet-button:hover {
+    background: rgba(0, 150, 255, 0.5);
+    box-shadow: var(--box-shadow-neon);
+}
+
+.chart-container {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 255, 136, 0.4);
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.chart-label {
+    text-align: center;
+    font-size: 0.8em;
+    color: var(--text-light-blue);
+    margin-top: 5px;
+}
+
+/* =============================================== */
+/* SECCIÓN CENTRAL: AVATAR & INTERACCIÓN */
+/* =============================================== */
+.center-panel {
+    align-items: center;
+    text-align: center;
+}
+
+.avatar-display {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid var(--border-neon-green);
+    box-shadow: 0 0 20px var(--border-neon-green);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(45deg, rgba(0,255,136,0.1), rgba(0,240,255,0.1));
+    overflow: hidden;
+}
+
+.avatar-face {
+    width: 100%;
+    height: 100%;
+    background-image: url('https://i.imgur.com/your-ai-face-image.png'); /* Reemplaza con una imagen de cara de IA */
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: scan-effect 4s infinite alternate;
+}
+@keyframes scan-effect {
+    0% { transform: translateY(0%); opacity: 0.8; }
+    50% { transform: translateY(5%); opacity: 1; }
+    100% { transform: translateY(0%); opacity: 0.8; }
+}
+
+.avatar-text {
+    position: absolute;
+    bottom: -30px; /* Ajusta la posición del texto del oráculo */
+    font-family: var(--font-header);
+    color: var(--text-neon-green);
+    text-shadow: 0 0 8px var(--text-neon-green);
+    font-size: 1.3em;
+    background: rgba(0,0,0,0.6);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.avatar-subtitle {
+    color: var(--text-light-blue);
+    font-size: 0.9em;
+    font-style: italic;
+    margin-top: -15px; /* Ajusta la posición de la subtítulo */
+}
+
+.interaction-zone {
+    width: 100%;
+    max-width: 600px; /* Ancho máximo para la entrada y respuesta */
+}
+
+.query-input-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.query-input {
+    flex-grow: 1;
+    padding: 12px 15px;
+    background: rgba(0, 10, 20, 0.95);
+    border: 1px solid var(--border-neon-blue);
+    color: var(--text-light-blue);
+    font-family: var(--font-body);
+    font-size: 1em;
+    outline: none;
+    transition: all 0.3s ease;
+}
+.query-input:focus {
+    border-color: var(--text-neon-green);
+    box-shadow: var(--box-shadow-neon-green);
+}
+
+.action-button {
+    padding: 12px 20px;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-header);
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+}
+
+.primary-button {
+    background: var(--button-bg-primary);
+    border: 1px solid var(--border-neon-blue);
+    color: var(--text-light-blue);
+}
+.primary-button:hover {
+    background: rgba(0, 150, 255, 0.5);
+    box-shadow: var(--box-shadow-neon);
+}
+.primary-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.response-display {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    padding: 15px;
+    margin-top: 15px;
+    min-height: 80px;
+    text-align: left;
+    overflow-y: auto;
+    color: var(--text-light-blue);
+    font-size: 0.9em;
+}
+
+/* =============================================== */
+/* SECCIÓN DERECHA: UTILIDADES WEB3 */
+/* =============================================== */
+.right-panel .utility-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.right-panel .utility-item:last-child {
+    margin-bottom: 0;
+}
+
+.utility-item .utility-icon {
+    font-size: 1.5em;
+    margin-bottom: 5px;
+    color: var(--text-neon-green);
+}
+.utility-item .utility-label {
+    color: var(--text-light-blue);
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.input-field {
+    background: rgba(0, 10, 20, 0.7);
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    color: var(--text-light-blue);
+    padding: 8px;
+    font-family: var(--font-body);
+    font-size: 0.9em;
+    width: calc(100% - 18px); /* Padding */
+    margin-top: 5px;
+}
+.input-field:focus {
+    border-color: var(--text-neon-green);
+    box-shadow: 0 0 5px var(--text-neon-green);
+}
+.input-field[readonly] {
+    opacity: 0.7;
+    cursor: default;
+}
+
+.secondary-button {
+    background: var(--button-bg-secondary);
+    border: 1px solid var(--text-orange);
+    color: var(--text-orange);
+    margin-top: 10px;
+}
+.secondary-button:hover {
+    background: rgba(100, 100, 100, 0.5);
+    box-shadow: 0 0 8px var(--text-orange);
+}
+.secondary-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tx-hash {
+    font-size: 0.7em;
+    word-break: break-all; /* Para hashes largos */
+    color: var(--text-light-blue);
+    margin-top: 5px;
+}
+
+/* =============================================== */
+/* SECCIÓN INFERIOR: LOG CÓSMICO (CONVERSACIÓN) */
+/* =============================================== */
+.cosmic-log-panel {
+    grid-column: 1 / -1; /* Ocupa todo el ancho */
+    min-height: 200px;
+}
+
+.log-display {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 255, 136, 0.4);
+    padding: 15px;
+    flex-grow: 1;
+    overflow-y: auto;
+    font-size: 0.85em;
+    color: var(--text-neon-green);
+    white-space: pre-wrap; /* Para conservar saltos de línea y ajustar texto */
+    max-height: 300px; /* Altura máxima para el log */
+}
+
+/* Estilos de mensajes de chat (igual que antes, pero con la nueva estética) */
+.message {
+    margin: 8px 0;
+    padding: 10px 14px;
+    border-radius: 6px;
+    max-width: 85%;
+    border-left: 3px solid; /* Efecto de barra lateral */
+}
+.user-message {
+    background: rgba(0, 150, 255, 0.15); /* Fondo más sutil */
+    color: var(--text-light-blue);
+    margin-left: auto;
+    border-color: var(--border-neon-blue);
+}
+.assistant-message {
+    background: rgba(0, 255, 136, 0.1); /* Fondo más sutil */
+    color: var(--text-neon-green);
+    margin-right: auto;
+    border-color: var(--border-neon-green);
+}
+.error-message {
+    background: rgba(255, 68, 68, 0.15);
+    color: var(--text-red);
+    border-color: var(--text-red);
+}
+
+.typing {
+    display: flex;
+    align-items: center;
+}
+.typing-dots {
+    display: flex;
+    gap: 4px;
+}
+.typing-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-neon-green);
+    animation: bounce 1s ease-in-out infinite both;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.1s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.2s; }
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+.notification-area {
+    margin-top: 10px;
+    padding: 8px 15px;
+    background: rgba(255, 255, 0, 0.15);
+    color: var(--text-orange);
+    border: 1px solid var(--text-orange);
+    display: none; /* Oculto por defecto */
+}
+
+/* =============================================== */
+/* RESPONSIVE DESIGN (Básico) */
+/* =============================================== */
+@media (max-width: 1024px) {
+    .main-grid {
+        grid-template-columns: 1fr; /* Columna única en pantallas más pequeñas */
+    }
+    .header-title {
+        font-size: 1.8em;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-title {
+        font-size: 1.5em;
+    }
+    .panel {
+        padding: 10px;
+    }
+    .status-item, .utility-item {
+        font-size: 0.8em;
+    }
+    .query-input, .action-button {
+        padding: 10px;
+        font-size: 0.8em;
+    }
+}
+===== ESTILOS COGNITIVOS ASV-A AURION ===== */
 
 /* Mejoras para el área de respuesta */
 .response-display {
