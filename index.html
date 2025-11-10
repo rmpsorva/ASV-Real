@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASV-A AURION COVRA AI - Cognitive OS</title>
+    
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script> 
+    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =====================================================================
+           ESTILOS CSS: AUTORIDAD VISUAL Y FUNCIONAL
+           ===================================================================== */
+        :root {
+            --color-primary: #00E5FF; --color-secondary: #00FFC0; --color-tertiary: #FF00FF; 
+            --color-background-dark: #0A0A1F; --color-background-panel: rgba(10, 10, 30, 0.7);
+            --color-text-light: #E0FFFF; --font-heading: 'Orbitron', sans-serif;
+            --panel-border: 1px solid rgba(0, 229, 255, 0.2); --panel-glow: 0 0 8px rgba(0, 229, 255, 0.3);
+            --color-dark: #071520; --neon-red: #ff4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); background: var(--color-background-dark); color: var(--color-text-light); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; overflow: hidden; }
+
+        .system-container { 
+            width: 100%; max-width: 1600px; position: relative;
+            transform: perspective(1000px) rotateX(3deg) scale(0.95);
+            filter: drop-shadow(0 0 50px rgba(0, 229, 255, 0.6));
+        }
+
+        .header-title { font-family: var(--font-heading); font-size: 2.8em; color: var(--color-text-light); text-shadow: 0 0 20px var(--color-primary); }
+        .main-grid { display: grid; grid-template-columns: 1.2fr 2fr 1.2fr; gap: 30px; }
+        .panel { background: var(--color-background-panel); backdrop-filter: blur(10px); border: var(--panel-border); border-radius: 15px; padding: 25px; box-shadow: var(--panel-glow); }
+        .section-title { font-family: var(--font-heading); color: var(--color-secondary); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid rgba(0, 255, 192, 0.15); text-transform: uppercase; }
+
+        /* Estilos de Avatar y Animación */
+        .avatar-face { width: 200px; height: 200px; background: radial-gradient(circle, rgba(0, 255, 192, 0.4) 0%, rgba(0, 255, 192, 0.1) 60%, transparent 100%); border-radius: 50%; border: 2px solid var(--color-primary); box-shadow: 0 0 40px var(--color-primary); animation: avatar-pulse 2s infinite alternate; }
+        @keyframes avatar-pulse { 0% { transform: scale(1); box-shadow: 0 0 20px var(--color-primary); } 100% { transform: scale(1.05); box-shadow: 0 0 40px var(--color-primary), 0 0 60px var(--color-secondary); } }
+
+        /* Estilos de Componentes */
+        .status-item, .utility-item { border-left: 3px solid var(--color-primary); }
+        .input-field { background: var(--color-background-dark); border: 1px solid rgba(0, 229, 255, 0.3); color: var(--color-text-light); }
+        .chart-container { height: 150px; border: 1px solid rgba(0, 229, 255, 0.1); }
+        .action-button { padding: 10px 15px; font-family: var(--font-heading); cursor: pointer; text-transform: uppercase; width: 100%; }
+        .primary-button { background: var(--color-primary); color: var(--color-background-dark); }
+    </style>
+</head>
+<body>
+    <div class="system-container">
+        <div class="header-display">
+            <h1 class="header-title">ASV-A AURION COVRA AI - Cognitive Operating System</h1>
+            <p class="header-subtitle">Oráculo de Realidad Web3 | <span class="active-status">SISTEMA COGNITIVO ACTIVO</span></p>
+        </div>
+
+        <div class="main-grid">
+            <div class="panel left-panel">
+                <div class="panel-section avatar-status">
+                    <h3 class="section-title">AVATAR & ESTADO DEL SISTEMA</h3>
+                    <div class="status-grid">
+                        <div class="status-item power-indicator"> <span class="icon">⚡</span> <span class="label">POWER STATUS</span> <span class="value" id="powerStatus">ONLINE</span> </div>
+                        <div class="status-item"> <span class="label">WALLET STATUS</span> <span class="value" id="walletStatus">DESCONECTADO</span> <button id="connectWalletBtn" class="action-button primary-button">CONECTAR</button> </div>
+                        <div class="status-item"> <span class="label">SALDO ASV-A</span> <span class="value" id="asvBalance">0.0000 ASV-A</span> </div>
+                        <div class="status-item"> <span class="label">PRECIO ASV-A (USD)</span> <span class="value" id="asvPrice">$0.00000000</span> </div>
+                    </div>
+                </div>
+
+                <div class="panel-section analysis-data">
+                    <h3 class="section-title">ANÁLISIS COGNITIVO</h3>
+                    <div class="chart-container"> <canvas id="latencyChart"></canvas> <p class="chart-label">Latencia Oráculo (ms)</p> </div>
+                    <div class="chart-container"> <canvas id="ragHitsChart"></canvas> <p class="chart-label">RAG Context Hits (%)</p> </div>
+                </div>
+            </div>
+
+            <div class="panel center-panel">
+                <div class="avatar-display">
+                    <div class="avatar-face" id="avatarFace"></div>
+                    <div class="avatar-text">ORÁCULO ASV-A</div>
+                    <p class="avatar-subtitle">"SOY CAPAZ DE HABLAR, COMPRENDER Y AYUDAR"</p>
+                </div>
+                
+                <div class="interaction-zone">
+                    <div class="query-input-group">
+                        <input type="text" id="oracleQueryInput" class="query-input" placeholder="Escribe tu consulta o comando..." required>
+                        <button id="sendQueryBtn" class="action-button primary-button">SEND</button>
+                    </div>
+                    <div id="oracleResponse" class="response-display">
+                        <p>Bienvenido. Conecta tu wallet y explora las capacidades del Oráculo ASV-A.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel right-panel">
+                <div class="panel-section web3-utilities">
+                    <h3 class="section-title">UTILIDADES WEB3 (TX)</h3>
+                    <div class="utility-item">
+                        <span class="utility-icon">💸</span>
+                        <span class="utility-label">PAGO DE SERVICIO</span>
+                        <input type="number" id="txAmount" class="input-field" placeholder="Cantidad ASV-A">
+                        <input type="text" id="txRecipient" class="input-field" value="0x4989e248039E69A7115842d0571C4003E9991234" readonly>
+                        <button id="sendTxBtn" class="action-button secondary-button" disabled>FIRMAR Y PAGAR (Móvil)</button>
+                    </div>
+                    <div class="utility-item">
+                        <span class="utility-icon">👁️</span>
+                        <span class="utility-label">ESTADO DE ÚLTIMA TX</span>
+                        <span class="value" id="lastTxStatus">IDLE</span>
+                        <span class="value tx-hash" id="lastTxHash"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel cosmic-log-panel">
+            <h3 class="section-title">LOG CÓSMICO (EVENTOS & RESPUESTAS)</h3>
+            <pre id="cosmicLog" class="log-display">
+                [00:00:00] 🟢 SISTEMA ASV-A INICIADO. Esperando comandos...
+            </pre>
+            <div id="notificationArea" class="notification-area"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONEXIÓN CRÍTICA Y AUTORIDAD A LA API 5000 ---
+        const API_URL = 'http://localhost:5000/chat';
+        const API_HEALTH_URL = 'http://localhost:5000/health';
+        
+        // Utilitarios
+        const el = (id) => document.getElementById(id);
+        const logCosmicEvent = (message) => { console.log(`[LOG] ${message}`); };
+        const initializeCharts = () => { console.log("Gráficos Chart.js inicializados."); };
+        const updateChart = (chart, value, label) => { /* Lógica de actualización de Chart.js */ };
+        
+        // --- FUNCIONES CLAVE DE AUTORIDAD AGI ---
+        
+        function updateWalletUI(isConnected) {
+            // Esta función simula la autoridad sobre los estados de la DApp
+            const walletStatusEl = el('walletStatus');
+            const connectBtn = el('connectWalletBtn');
+            const sendTxBtn = el('sendTxBtn');
+            if (walletStatusEl) walletStatusEl.textContent = isConnected ? 'AUTORIZADO' : 'DESCONECTADO';
+            if (connectBtn) connectBtn.textContent = isConnected ? 'AUTORIZADO' : 'CONECTAR';
+            if (sendTxBtn) sendTxBtn.disabled = !isConnected;
+        }
+
+        async function handleUserQuery() {
+            const query = el('oracleQueryInput').value.trim();
+            if (!query) return;
+
+            el('oracleResponse').innerHTML = '<p>Procesando consulta cognitiva...</p>';
+            
+            try {
+                // LLAMADA CRÍTICA A LA API 5000
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: query, user_id: 'session_id_authority' })
+                });
+
+                const data = await response.json();
+                
+                if (data.response) {
+                    el('oracleResponse').innerHTML = `<p><strong>ASV-A:</strong> ${data.response}</p>`;
+                    logCosmicEvent("✅ RESPUESTA RECIBIDA de API 5000.");
+                    updateSystemStatus('✅ RESPUESTA ÓPTIMA');
+                } else {
+                    el('oracleResponse').innerHTML = `<p>❌ Error de IA: ${data.error || 'Respuesta nula'}</p>`;
+                    updateSystemStatus('❌ ERROR DE PROCESAMIENTO');
+                }
+            } catch (error) {
+                el('oracleResponse').innerHTML = `<p>❌ Error CRÍTICO: No se pudo conectar al Puerto 5000.</p>`;
+                updateSystemStatus('🔴 SERVIDOR PYTHON OFFLINE');
+            }
+        }
+        
+        // Función para simular el inicio de autoprogramación/ejecución
+        function executeAutoprogramming() {
+            logCosmicEvent("🧠 INICIANDO AUTOPROGRAMACIÓN... Comando de ejecución enviado.");
+            el('oracleResponse').innerHTML = `<p><strong>ASV-A:</strong> Comando de AUTORIDAD recibido. Iniciando ciclo de Génesis (Simulación).</p>`;
+            // Aquí iría el código real que llama a un endpoint de ejecución en el backend
+        }
+        
+        // Chequeo de estado del Backend (Puerto 5000)
+        async function checkBackendStatus() {
+            try {
+                const res = await fetch(API_HEALTH_URL);
+                const isConnected = res.ok;
+                updateSystemStatus(isConnected ? '🟢 CONECTADO AL BACKEND' : '🔴 BACKEND NO RESPONDE');
+            } catch (e) {
+                updateSystemStatus('🔴 SERVIDOR NO ENCONTRADO');
+            }
+            setTimeout(checkBackendStatus, 5000);
+        }
+        
+        // Utilitarios de UI
+        function updateSystemStatus(status) {
+            const currentStatusEl = document.querySelector('.active-status');
+            if (currentStatusEl) currentStatusEl.textContent = status;
+        }
+        const connectWallet = () => { updateWalletUI(true); }; // Lógica simple
+
+        // --- INICIALIZACIÓN ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCharts();
+            el('connectWalletBtn').addEventListener('click', connectWallet);
+            el('sendQueryBtn').addEventListener('click', handleUserQuery);
+            checkBackendStatus();
+
+            // Asignar listeners (simulación)
+            el('sendTxBtn').addEventListener('click', () => { logCosmicEvent("💸 TX Simulado."); el('lastTxStatus').textContent = 'FIRMADO'; });
+        });
+    </script>
+</body>
+</html>
