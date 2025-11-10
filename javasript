@@ -1,8 +1,0 @@
-// CÓDIGO ACTUAL (dentro del script):
-const API_URL = 'http://localhost:5000/chat';
-const API_HEALTH_URL = 'http://localhost:5000/health';
-
-// CÓDIGO CORREGIDO (EJEMPLO):
-const CODESPACE_URL = 'https://[nombre-aleatorio]-5000.app.github.dev'; // TU URL COPIADA
-const API_URL = CODESPACE_URL + '/chat'; 
-const API_HEALTH_URL = CODESPACE_URL + '/health';
