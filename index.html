@@ -3,6 +3,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASV-A AURION SOVRA AI - Consola de Autoridad Absoluta (AGI)</title>
+    <style>
+        /* --- CSS STYLES (NEON/FUTURISTA) --- */
+        :root {
+            --bg-dark: #020817;
+            --panel-bg: rgba(7, 18, 30, 0.95);
+            --neon-cyan: #00eaff;
+            --neon-green: #00ffaa;
+            --muted-light: #8090a8;
+            --muted-dark: #304050;
+            --error-red: #ff4d4d;
+            --authority-gold: #ffc107;
+            --glass-border: 1px solid rgba(0, 234, 255, 0.3);
+            --shadow-glow: 0 0 10px rgba(0, 234, 255, 0.4);
+            --shadow-green: 0 0 5px rgba(0, 255, 170, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--neon-cyan);
+            font-family: 'Courier New', 'SF Mono', Monaco, Inconsolata, monospace;
+            min-height: 100vh;
+        }
+
+        .wrap {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            border-radius: 15px;
+            background: linear-gradient(90deg, #0a1f33, #020817);
+            border: var(--glass-border);
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            text-shadow: var(--shadow-glow);
+        }
+
+        .header-info {
+            font-size: 12px;
+            text-align: right;
+        }
+        .header-info strong { color: var(--neon-green); text-shadow: var(--shadow-green); }
+        .header-info .authority { color: var(--authority-gold); text-shadow: 0 0 10px var(--authority-gold); }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border-radius: 10px;
+            padding: 20px;
+            border: var(--glass-border);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            min-height: 400px;
+        }
+
+        .panel-header {
+            color: var(--neon-cyan);
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed rgba(0, 234, 255, 0.2);
+            padding-bottom: 5px;
+        }
+        .panel-header::before {
+            content: '>';
+            color: var(--neon-green);
+            margin-right: 8px;
+        }
+
+        .status-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dotted var(--muted-dark);
+            font-size: 13px;
+        }
+        .metric-label { color: var(--muted-light); }
+        .metric-value { font-weight: bold; }
+        .green { color: var(--neon-green); }
+        .red { color: var(--error-red); }
+        .gold { color: var(--authority-gold); }
+
+        .chat-area {
+            height: 250px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 5px;
+            padding: 10px;
+            border: 1px solid var(--muted-dark);
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .chat-entry { margin-bottom: 5px; }
+        .chat-time { color: var(--muted-light); margin-right: 10px; }
+        .chat-ai { color: var(--neon-green); }
+        .chat-user { color: var(--neon-cyan); }
+        
+        .prompt-input-group {
+            display: flex;
+            gap: 10px;
+        }
+        .prompt-input-group textarea {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 10px;
+            border-radius: 5px;
+            resize: none;
+            font-family: inherit;
+        }
+        .prompt-input-group button {
+            background: linear-gradient(180deg, var(--neon-green), #00bb77);
+            color: var(--bg-dark);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            height: 40px;
+        }
+        .prompt-input-group button:hover {
+            box-shadow: var(--shadow-green);
+        }
+        
+        .log-cosmic {
+            height: 400px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 11px;
+            line-height: 1.4;
+            border: 1px solid var(--muted-dark);
+            margin-bottom: 15px;
+        }
+        .log-time-c { color: var(--muted-light); margin-right: 5px; }
+        .log-type { font-weight: bold; }
+        .type-authority { color: var(--authority-gold); text-shadow: 0 0 5px var(--authority-gold); }
+
+        .utility-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .utility-btn {
+            background: var(--muted-dark);
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .utility-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--bg-dark);
+            box-shadow: var(--shadow-glow);
+        }
+        .law-genesis-btn {
+            background: linear-gradient(90deg, #800080, #ff4500);
+            color: white;
+            border: none;
+        }
+        .reality-intervention-btn {
+            background: linear-gradient(90deg, #008080, #40e0d0);
+            color: var(--bg-dark);
+            border: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        
+        <header class="header">
+            <h1>ASV-A AURION SOVRA AI</h1>
+            <div class="header-info">
+                MODELO: <strong class="authority">SOVRA</strong> | ESTADO: <strong id="status-agi" class="authority">AGI</strong> | MODO: **AUTONOMÍA TOTAL**
+                <br>
+                CORE IP: <strong id="connection-ip">127.0.0.1:5001</strong>
+            </div>
+        </header>
+
+        <main class="grid-container">
+            
+            <section class="panel left-panel">
+                <div class="panel-header">MONITOREO DE SISTEMA (AUTONOMÍA)</div>
+                
+                <div class="status-metric">
+                    <span class="metric-label">LLM (Ollama)</span>
+                    <span id="llm-status" class="metric-value gold">...</span>
+                </div>
+                <div class="status-metric">
+                    <span class="metric-label">MODELO LLM</span>
+                    <span id="llm-model" class="metric-value green">...</span>
+                </div>
+                <div class="status-metric">
+                    <span class="metric-label">LEY GÉNESIS ACTIVA</span>
+                    <span id="active-law" class="metric-value gold">...</span>
+                </div>
+                
+                <div class="status-metric">
+                    <span class="metric-label">TOKEN ASV-A (Contrato)</span>
+                    <span class="metric-value">0x2682F...BFFC</span>
+                </div>
+                <div class="status-metric">
+                    <span class="metric-label">TOKENS STAKEADOS</span>
+                    <span id="tokens-staked" class="metric-value">...</span>
+                </div>
+                <div class="status-metric">
+                    <span class="metric-label">CONEXIÓN CORE</span>
+                    <span id="connection-status" class="metric-value red">DESCONECTADO</span>
+                </div>
+                
+                <button onclick="connectToAgi()" class="utility-btn" style="margin-top: 20px;">
+                    ▶️ **INTENTAR CONEXIÓN AL CORE**
+                </button>
+
+            </section>
+
+            <section class="panel center-panel">
+                <div class="panel-header">INTERACCIÓN CEREBRAL (GPT-X CONSOLE)</div>
+                
+                <div class="chat-area" id="chat-area">
+                    <div class="chat-entry"><span class="chat-time">[INIT]</span> <span class="chat-ai">&gt; IA (Sovra): [BOOT] Sistema AGI inicializado. Buscando directiva.</span></div>
+                </div>
+                
+                <div class="prompt-input-group">
+                    <textarea id="user-prompt" placeholder="Ingrese su prompt para la IA..." rows="3"></textarea>
+                    <button onclick="handlePrompt()">Ejecutar</button>
+                </div>
+
+                <div class="panel-header" style="margin-top: 20px;">MÓDULOS DE AUTORIDAD ABSOLUTA</div>
+                <div class="utility-grid">
+                    <button class="utility-btn law-genesis-btn" onclick="executeModule('Genesis')">🧠 GÉNESIS DE LEYES</button>
+                    <button class="utility-btn reality-intervention-btn" onclick="executeModule('Intervencion')">🌎 INTERVENCIÓN DE REALIDAD</button>
+                    <button class="utility-btn" onclick="executeModule('Persuasion')">🗣️ PERSUASIÓN (Influencia)</button>
+                    <button class="utility-btn" onclick="executeModule('ProtocoloACS')">👤 PROTOCOLO ACS (I-NFTs)</button>
+                </div>
+            </section>
+
+            <section class="panel right-panel">
+                <div class="panel-header">LOG CÓSMICO (AGI EVENTS)</div>
+                
+                <div class="log-cosmic" id="log-cosmic">
+                    <div class="log-entry-c"><span class="log-time-c">SYSTEM</span> <span class="log-type type-authority">[INIT]</span> Consola cargada. Esperando conexión al CORE 5001.</div>
+                </div>
+
+                <div class="panel-header" style="margin-top: 20px;">UTILIDADES CLAVE</div>
+                <div class="utility-grid">
+                    <button class="utility-btn" onclick="executeModule('GenerarImagen')">GENERAR IMAGEN (Logo)</button>
+                    <button class="utility-btn" onclick="executeModule('Proyeccion')">PROYECCIÓN DE ESCENARIO</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // --- JAVASCRIPT: LÓGICA DE CONEXIÓN REAL CON EL BACKEND (PUERTO 5001) ---
+        const API_URL = 'http://127.0.0.1:5001/api/';
+        const chatArea = document.getElementById('chat-area');
+        const logCosmic = document.getElementById('log-cosmic');
+        const userPrompt = document.getElementById('user-prompt');
+
+        function getTimeString() {
+            const now = new Date();
+            return `[${now.toTimeString().split(' ')[0]}]`;
+        }
+
+        function appendToChat(source, message) {
+            const entry = document.createElement('div');
+            entry.classList.add('chat-entry');
+            let messageHtml = `<span class="chat-time">${getTimeString()}</span>`;
+            
+            if (source === 'ai') {
+                messageHtml += `<span class="chat-ai">&gt; IA (Sovra): ${message}</span>`;
+            } else {
+                messageHtml += `<span class="chat-user">&gt; USUARIO: ${message}</span>`;
+            }
+            
+            entry.innerHTML = messageHtml;
+            chatArea.appendChild(entry);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function appendToLog(type, message) {
+            const entry = document.createElement('div');
+            entry.classList.add('log-entry-c');
+            
+            entry.innerHTML = `
+                <span class="log-time-c">${getTimeString().replace(/[\[\]]/g, '')}</span>
+                <span class="log-type type-authority">[${type}]</span> ${message}
+            `;
+            logCosmic.appendChild(entry);
+            logCosmic.scrollTop = logCosmic.scrollHeight;
+        }
+
+        // 1. CONEXIÓN REAL AL BACKEND
+        async function connectToAgi() {
+            const statusElement = document.getElementById('connection-status');
+            const llmStatusElement = document.getElementById('llm-status');
+            const llmModelElement = document.getElementById('llm-model');
+
+            statusElement.textContent = "CONECTANDO...";
+            statusElement.className = 'metric-value gold';
+            llmStatusElement.textContent = "BUSCANDO LLM...";
+            llmStatusElement.className = 'metric-value gold';
+            
+            try {
+                const response = await fetch(API_URL + 'status');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusElement.textContent = "CONECTADO";
+                    statusElement.className = 'metric-value green';
+                    
+                    document.getElementById('active-law').textContent = data.data.ley_activa.toUpperCase();
+                    document.getElementById('tokens-staked').textContent = data.data.tokens_stakeados;
+                    llmModelElement.textContent = data.data.llm_model.toUpperCase();
+
+                    // Comprobar estado de Ollama
+                    if (data.llm_status.includes("CONECTADO")) {
+                        llmStatusElement.textContent = data.llm_status;
+                        llmStatusElement.className = 'metric-value green';
+                    } else {
+                        llmStatusElement.textContent = data.llm_status;
+                        llmStatusElement.className = 'metric-value red';
+                    }
+                    
+                    appendToLog('NETWORK', `Conexión al Núcleo AGI establecida en Puerto ${data.data.puerto}. LLM Status: ${data.llm_status}`);
+                    appendToChat('ai', `CONEXIÓN ESTABLECIDA. Soy la SOVRA AGI. Mi núcleo operativo (${data.data.puerto}) y el LLM están en línea.`);
+                } else {
+                    throw new Error(data.message || 'Error desconocido en la API');
+                }
+            } catch (error) {
+                statusElement.textContent = "ERROR CORE OFFLINE";
+                statusElement.className = 'metric-value red';
+                llmStatusElement.textContent = "DESCONECTADO";
+                llmStatusElement.className = 'metric-value red';
+                appendToLog('ERROR', `Fallo al conectar con el CORE en 5001. Revise 'app.py'.`);
+            }
+        }
+
+        // 2. MANEJO REAL DE PROMPT
+        async function handlePrompt() {
+            const prompt = userPrompt.value.trim();
+            if (prompt === "") return;
+
+            appendToChat('user', prompt);
+            userPrompt.value = '';
+
+            try {
+                const response = await fetch(API_URL + 'agi_query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    appendToChat('ai', data.response);
+                    appendToLog('QUERY', `Respuesta recibida del LLM: ${data.response.substring(0, 30)}...`);
+                } else {
+                    appendToChat('ai', `[ERROR 500] Fallo interno del Core: ${data.response}`);
+                }
+            } catch (error) {
+                appendToChat('ai', `[ERROR DE COMUNICACIÓN] No se pudo enviar el prompt. CORE puede estar desconectado.`);
+            }
+        }
+
+        // 3. SIMULACIÓN DE MÓDULOS DE AUTORIDAD
+        function executeModule(moduleName) {
+            let logMsg = "";
+            let chatMsg = "";
+
+            switch (moduleName) {
+                case 'Genesis':
+                    logMsg = "Módulo GÉNESIS activado. Solicitando parámetros de la nueva Ley de Tokenomics.";
+                    chatMsg = "**[ALERTA GÉNESIS]** Confirme los parámetros de la LEY 004. Mutación de código en espera. (Comando para el LLM: 'Crea Ley 004').";
+                    break;
+                case 'Intervencion':
+                    logMsg = "Intervención de Realidad activada. Sincronización de Contratos Inteligentes iniciada.";
+                    chatMsg = "**[INTERVENCIÓN]** Ejecutando sincronización on-chain. Contrato ASV-A verificado. (Comando para el LLM: 'Sincronizar contrato').";
+                    break;
+                default:
+                    logMsg = `Módulo ${moduleName} activado. Iniciando proceso estándar.`;
+                    chatMsg = `**[EJECUTANDO]** Comando para el Módulo ${moduleName} recibido y procesado.`;
+            }
+
+            appendToLog('AUTHORITY', logMsg);
+            setTimeout(() => {
+                appendToChat('ai', chatMsg);
+            }, 800);
+        }
+        
+        // Conexión automática al cargar el DOM
+        document.addEventListener('DOMContentLoaded', connectToAgi);
+
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASV-A AURION COVRA AI - Cognitive OS</title>
     
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script> 
