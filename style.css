@@ -1,3 +1,97 @@
+/* ===== ESTILOS COGNITIVOS ASV-A AURION ===== */
+
+/* Mejoras para el área de respuesta */
+.response-display {
+    background: rgba(0, 20, 40, 0.8);
+    border: 1px solid #00f0ff;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    min-height: 120px;
+    font-family: 'Share Tech Mono', monospace;
+    color: #00f0ff;
+    line-height: 1.5;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.response-display:hover {
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+}
+
+/* Estados de la respuesta */
+.response-processing {
+    color: #ffaa00;
+    text-align: center;
+    font-style: italic;
+}
+
+.response-error {
+    color: #ff4444;
+    border-color: #ff4444;
+}
+
+.response-success {
+    color: #00ff88;
+    border-color: #00ff88;
+}
+
+/* Input de consulta mejorado */
+.query-input {
+    background: rgba(0, 10, 20, 0.9) !important;
+    border: 1px solid #00f0ff !important;
+    color: #00f0ff !important;
+    font-family: 'Share Tech Mono', monospace !important;
+}
+
+.query-input:focus {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.5) !important;
+    border-color: #00ff88 !important;
+}
+
+/* Botón de enviar estados */
+#sendQueryBtn:disabled {
+    background: #666 !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+}
+
+/* Log cósmico mejorado */
+.log-display {
+    background: rgba(0, 10, 20, 0.95) !important;
+    border: 1px solid #00f0ff !important;
+    color: #00ff88 !important;
+    font-family: 'Share Tech Mono', monospace !important;
+    max-height: 200px !important;
+    overflow-y: auto !important;
+}
+
+/* Estados del sistema */
+.value.success {
+    color: #00ff88 !important;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.value.error {
+    color: #ff4444 !important;
+    text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+}
+
+.value.warning {
+    color: #ffaa00 !important;
+    text-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+}
+
+/* Animación de pulsación para avatar cuando procesa */
+.processing .avatar-face {
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.5); }
+    50% { box-shadow: 0 0 40px rgba(0, 240, 255, 0.8); }
+}
+
 /* =====================================================================
    style.css - Estilos Avanzados e Innovadores para ASV-A UI
    ===================================================================== */
