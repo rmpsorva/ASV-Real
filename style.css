@@ -1,0 +1,481 @@
+/* =====================================================================
+   style.css - Estilos Avanzados e Innovadores para ASV-A UI
+   ===================================================================== */
+
+/* Variables CSS para una gestión de colores y efectos consistente */
+:root {
+    --color-primary: #00E5FF; /* Aqua vibrante para UI principal */
+    --color-secondary: #00FFC0; /* Verde neón para acentos y éxito */
+    --color-tertiary: #FF00FF; /* Magenta para advertencias o elementos clave */
+    --color-background-dark: #0A0A1F; /* Fondo muy oscuro y profundo */
+    --color-background-panel: rgba(10, 10, 30, 0.7); /* Fondo de panel semitransparente */
+    --color-border-glow: rgba(0, 229, 255, 0.4); /* Resplandor del borde principal */
+    --color-text-light: #E0FFFF; /* Texto principal claro */
+    --color-text-dim: #8899AA; /* Texto secundario o de ayuda */
+    --font-heading: 'Orbitron', sans-serif;
+    --font-body: 'Share Tech Mono', monospace;
+    --glow-strength: 0 0 15px rgba(0, 229, 255, 0.7), 0 0 30px rgba(0, 229, 255, 0.5);
+    --panel-border: 1px solid rgba(0, 229, 255, 0.2);
+    --panel-glow: 0 0 8px rgba(0, 229, 255, 0.3);
+}
+
+/* Reset y estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--color-background-dark);
+    color: var(--color-text-light);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow: hidden; /* Para manejar los efectos flotantes */
+    background-image: radial-gradient(circle at center, #1a1a3a 0%, #0a0a1f 100%);
+}
+
+/* Contenedor principal del sistema */
+.system-container {
+    width: 100%;
+    max-width: 1600px;
+    position: relative;
+    /* Efecto de un tablero flotante y ligeramente inclinado */
+    transform: perspective(1000px) rotateX(3deg) scale(0.95);
+    transform-style: preserve-3d;
+    filter: drop-shadow(0 0 50px rgba(0, 229, 255, 0.6));
+    animation: glow-pulse 3s infinite alternate;
+}
+
+@keyframes glow-pulse {
+    0% { filter: drop-shadow(0 0 30px rgba(0, 229, 255, 0.4)); }
+    100% { filter: drop_shadow(0 0 60px rgba(0, 229, 255, 0.8)); }
+}
+
+/* Cabecera del display */
+.header-display {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+    padding-bottom: 15px;
+}
+.header-display::after { /* Línea divisoria holográfica */
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20%;
+    right: 20%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--color-primary), transparent);
+    box-shadow: 0 0 10px var(--color-primary);
+}
+.header-title {
+    font-family: var(--font-heading);
+    font-size: 2.8em;
+    color: var(--color-text-light);
+    text-shadow: 0 0 20px var(--color-primary);
+    margin-bottom: 5px;
+}
+.header-subtitle {
+    font-size: 1.1em;
+    color: var(--color-text-dim);
+}
+.active-status {
+    color: var(--color-secondary);
+    font-weight: bold;
+    text-shadow: 0 0 8px var(--color-secondary);
+}
+
+/* Contenedor principal de la cuadrícula de paneles */
+.main-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 2fr 1.2fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+/* Estilos generales de los paneles flotantes */
+.panel {
+    background: var(--color-background-panel);
+    backdrop-filter: blur(10px); /* Efecto de cristal esmerilado */
+    border: var(--panel-border);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: var(--panel-glow);
+    position: relative;
+    overflow: hidden; /* Para máscaras o efectos internos */
+    transition: all 0.3s ease;
+}
+.panel:hover {
+    box-shadow: 0 0 15px var(--color-primary), 0 0 30px var(--color-secondary);
+    transform: translateY(-5px) scale(1.01); /* Pequeño efecto 3D */
+    border-color: var(--color-primary);
+}
+
+.section-title {
+    font-family: var(--font-heading);
+    font-size: 1.2em;
+    color: var(--color-secondary);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 255, 192, 0.15);
+    text-transform: uppercase;
+}
+
+/* --- Panel Izquierdo --- */
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+.status-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+.status-item {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border-left: 3px solid var(--color-primary);
+}
+.status-item .label {
+    font-size: 0.8em;
+    color: var(--color-text-dim);
+    margin-bottom: 5px;
+}
+.status-item .value {
+    font-family: var(--font-heading);
+    font-size: 1.1em;
+    color: var(--color-text-light);
+    text-shadow: 0 0 5px rgba(0, 229, 255, 0.5);
+}
+.power-indicator .value {
+    color: var(--color-secondary);
+    text-shadow: 0 0 8px var(--color-secondary);
+}
+.power-indicator .icon {
+    font-size: 1.5em;
+    color: var(--color-secondary);
+    text-shadow: 0 0 10px var(--color-secondary);
+    margin-bottom: 5px;
+}
+
+.analysis-data {
+    flex-grow: 1; /* Para que ocupe el espacio restante */
+}
+.chart-container {
+    margin-bottom: 20px;
+    position: relative;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 229, 255, 0.1);
+}
+.chart-label {
+    text-align: center;
+    font-size: 0.75em;
+    color: var(--color-text-dim);
+    margin-top: 10px;
+}
+
+/* --- Panel Central: Avatar Cognitivo --- */
+.center-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    position: relative;
+    min-height: 400px; /* Asegura espacio para el avatar y la interacción */
+}
+
+.avatar-display {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-face {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(0, 255, 192, 0.4) 0%, rgba(0, 255, 192, 0.1) 60%, transparent 100%);
+    border-radius: 50%;
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 0 40px var(--color-primary), inset 0 0 20px var(--color-primary);
+    animation: avatar-pulse 2s infinite alternate;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Efecto de malla holográfica */
+    -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="white"/><path d="M100 10l-10 10h20zm0 180l-10-10h20z" fill="white"/><path d="M100 10 C 140 10 180 50 180 100 S 140 190 100 190 S 20 140 20 100 S 60 10 100 10" stroke="white" stroke-width="2" fill="none"/></svg>');
+    mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="white"/><path d="M100 10l-10 10h20zm0 180l-10-10h20z" fill="white"/><path d="M100 10 C 140 10 180 50 180 100 S 140 190 100 190 S 20 140 20 100 S 60 10 100 10" stroke="white" stroke-width="2" fill="none"/></svg>');
+    
+    /* Placeholder para el rostro con degradado y animación */
+    background-image: 
+        linear-gradient(to bottom, #00E5FF, #00FFC0, #00E5FF), 
+        linear-gradient(to right, #00E5FF, #00FFC0, #00E5FF);
+    background-size: 200% 200%;
+    animation: avatar-gradient-shift 4s infinite linear;
+}
+
+@keyframes avatar-pulse {
+    0% { transform: scale(1); opacity: 0.9; box-shadow: 0 0 20px var(--color-primary); }
+    100% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 40px var(--color-primary), 0 0 60px var(--color-secondary); }
+}
+
+@keyframes avatar-gradient-shift {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+}
+
+.avatar-face::before { /* Ojos holográficos */
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 10px;
+    background: var(--color-secondary);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--color-secondary);
+    left: 40px; top: 75px;
+    animation: eye-blink 4s infinite steps(1);
+}
+.avatar-face::after { /* Ojos holográficos */
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 10px;
+    background: var(--color-secondary);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--color-secondary);
+    right: 40px; top: 75px;
+    animation: eye-blink 4s infinite steps(1);
+}
+@keyframes eye-blink {
+    0%, 95% { opacity: 1; }
+    98%, 100% { opacity: 0; }
+}
+
+
+.avatar-text {
+    font-family: var(--font-heading);
+    font-size: 1.5em;
+    color: var(--color-primary);
+    text-shadow: 0 0 10px var(--color-primary);
+    margin-top: 15px;
+}
+.avatar-subtitle {
+    font-size: 0.8em;
+    color: var(--color-text-dim);
+    margin-top: 5px;
+}
+
+.interaction-zone {
+    width: 100%;
+    max-width: 500px;
+    margin-top: auto; /* Empuja hacia abajo */
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-radius: 10px;
+}
+.query-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.query-input {
+    flex-grow: 1;
+    padding: 12px;
+    background: var(--color-background-dark);
+    border: 1px solid var(--color-primary);
+    border-radius: 5px;
+    color: var(--color-text-light);
+    font-family: var(--font-body);
+    font-size: 1em;
+    outline: none;
+}
+.query-input:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 8px var(--color-secondary);
+}
+.response-display {
+    min-height: 80px;
+    background: rgba(0, 0, 0, 0.4);
+    border-left: 3px solid var(--color-primary);
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    color: var(--color-text-light);
+    overflow-y: auto;
+    text-align: left;
+}
+.response-display p {
+    margin: 5px 0;
+}
+
+/* --- Panel Derecho --- */
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+.web3-utilities .utility-item {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border-left: 3px solid var(--color-secondary);
+    margin-bottom: 15px;
+}
+.utility-item .utility-icon {
+    font-size: 1.8em;
+    color: var(--color-secondary);
+    text-shadow: 0 0 10px var(--color-secondary);
+    margin-bottom: 8px;
+    align-self: center; /* Centrar icono */
+}
+.utility-item .utility-label {
+    font-size: 0.9em;
+    color: var(--color-text-dim);
+    margin-bottom: 5px;
+    text-align: center;
+}
+.input-field {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    background: var(--color-background-dark);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 4px;
+    color: var(--color-text-light);
+    font-family: var(--font-body);
+    font-size: 0.9em;
+}
+.input-field:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 5px var(--color-secondary);
+}
+.tx-hash {
+    font-size: 0.7em;
+    color: var(--color-tertiary);
+    word-break: break-all;
+}
+
+/* --- Log Cósmico (Panel Inferior) --- */
+.cosmic-log-panel {
+    grid-column: 1 / -1; /* Ocupa todo el ancho */
+    margin-top: 30px;
+}
+.log-display {
+    min-height: 150px;
+    max-height: 250px;
+    overflow-y: scroll;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(0, 229, 255, 0.1);
+    border-left: 3px solid var(--color-tertiary);
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 0.8em;
+    color: var(--color-text-light);
+    white-space: pre-wrap; /* Mantiene saltos de línea y espacios */
+    text-align: left;
+}
+.log-display::-webkit-scrollbar { width: 8px; }
+.log-display::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
+.log-display::-webkit-scrollbar-thumb { background: var(--color-primary); border-radius: 10px; box-shadow: 0 0 5px var(--color-primary); }
+
+/* Botones de acción */
+.action-button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-heading);
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    width: 100%; /* Ocupa todo el ancho disponible */
+    margin-top: 10px;
+}
+.action-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(100%);
+}
+.primary-button {
+    background: var(--color-primary);
+    color: var(--color-background-dark);
+    box-shadow: 0 0 10px var(--color-primary);
+}
+.primary-button:hover:not(:disabled) {
+    background: var(--color-text-light);
+    box-shadow: 0 0 15px var(--color-primary);
+    transform: translateY(-2px);
+}
+.secondary-button {
+    background: var(--color-secondary);
+    color: var(--color-background-dark);
+    box-shadow: 0 0 10px var(--color-secondary);
+}
+.secondary-button:hover:not(:disabled) {
+    background: var(--color-text-light);
+    box-shadow: 0 0 15px var(--color-secondary);
+    transform: translateY(-2px);
+}
+
+/* Notificaciones flotantes */
+.notification-area {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.notification {
+    padding: 15px 20px;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 0.9em;
+    color: var(--color-text-light);
+    box-shadow: var(--panel-glow);
+    animation: slideIn 0.5s forwards;
+    opacity: 0;
+    min-width: 250px;
+    max-width: 350px;
+}
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.notification.success {
+    background: rgba(0, 255, 192, 0.8);
+    border-left: 5px solid var(--color-secondary);
+    color: var(--color-background-dark);
+}
+.notification.error {
+    background: rgba(255, 0, 255, 0.8);
+    border-left: 5px solid var(--color-tertiary);
+    color: var(--color-text-light);
+}
+.notification.info {
+    background: rgba(0, 229, 255, 0.8);
+    border-left: 5px solid var(--color-primary);
+    color: var(--color-background-dark);
+}
