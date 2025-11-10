@@ -1,0 +1,29 @@
+[Unit]
+Description=Ollama Service (ASV-A Cognitive Engine)
+After=network-online.target
+
+[Service]
+# Usuario bajo el cual se ejecutará el servicio. Recomendado 'ollama' o un usuario no root.
+# Si no existe, usa un usuario con permisos limitados (ej: 'systemd-network').
+# User=ollama 
+# Group=ollama 
+# Si usas el script de instalación de Ollama, generalmente se ejecuta como el usuario actual.
+
+ExecStart=/usr/local/bin/ollama serve
+# Si deseas que escuche en toda la red local (0.0.0.0:11434):
+# Environment="OLLAMA_HOST=0.0.0.0:11434"
+# O si prefieres ejecutarlo solo en localhost (la configuración por defecto y más segura):
+Environment="OLLAMA_HOST=127.0.0.1:11434"
+
+# Asegura que el servicio se mantenga activo
+Restart=always
+RestartSec=3
+
+# Configuración de seguridad y límites
+LimitNOFILE=65535
+LimitNPROC=65535
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
