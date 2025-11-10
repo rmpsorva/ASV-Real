@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASV-A AURION COVRA AI - Sistema de Auto-Programación</title>
+    <style>
+        :root {
+            --neon-blue: #00f0ff;
+            --neon-green: #00ff88;
+            --neon-purple: #9b59ff;
+            --neon-orange: #ff7700;
+            --neon-pink: #ff00cc;
+            --bg-dark: #000a1a;
+            --panel-bg: rgba(0, 5, 20, 0.95);
+            --sub-bg: rgba(5, 15, 40, 0.9);
+            --border-color: rgba(0, 240, 255, 0.3);
+            --font-mono: 'Courier New', monospace;
+            --font-header: 'Orbitron', sans-serif;
+            --neon-red: #ff4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 100, 200, 0.4) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(155, 89, 255, 0.3) 0%, transparent 40%);
+            color: var(--neon-blue);
+            font-family: var(--font-mono);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            border: 2px solid var(--neon-purple);
+            padding: 20px;
+            box-shadow: 0 0 50px rgba(155, 89, 255, 0.4);
+            background: rgba(0, 5, 20, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--neon-blue);
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: var(--neon-green);
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px var(--neon-green);
+            margin-bottom: 10px;
+            font-family: var(--font-header);
+        }
+        
+        .header p {
+            color: var(--neon-blue);
+            font-size: 1.1rem;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
+        }
+        
+        .panel h2 {
+            color: var(--neon-purple);
+            margin-bottom: 15px;
+            font-family: var(--font-header);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+        
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            background: rgba(0, 240, 255, 0.1);
+            border-left: 3px solid var(--neon-blue);
+        }
+        
+        .ai-message {
+            background: rgba(155, 89, 255, 0.1);
+            border-left: 3px solid var(--neon-purple);
+        }
+        
+        .system-message {
+            background: rgba(255, 119, 0, 0.1);
+            border-left: 3px solid var(--neon-orange);
+            font-size: 0.9rem;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-group input {
+            flex: 1;
+            padding: 12px;
+            background: var(--sub-bg);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            font-family: var(--font-mono);
+            border-radius: 5px;
+        }
+        
+        .input-group button {
+            padding: 12px 24px;
+            background: var(--neon-green);
+            color: var(--bg-dark);
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .input-group button:hover {
+            background: var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            padding: 10px;
+            background: var(--sub-bg);
+            border: 1px solid var(--neon-orange);
+            color: var(--neon-orange);
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: var(--neon-orange);
+            color: white;
+            box-shadow: 0 0 10px var(--neon-orange);
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: var(--sub-bg);
+            border-left: 5px solid var(--neon-blue);
+            border-radius: 3px;
+        }
+        
+        .auto-programming {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid var(--neon-green);
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 5px;
+        }
+        
+        .auto-programming h3 {
+            color: var(--neon-green);
+            margin-bottom: 10px;
+            font-family: var(--font-header);
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            border-top: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            font-size: 0.9rem;
+        }
+    </style>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ASV-A AURION COVRA AI</h1>
+            <p>SISTEMA DE AUTO-PROGRAMACIÓN COGNITIVA</p>
+        </div>
+
+        <div class="status-bar">
+            <div>🟢 SISTEMA ACTIVO</div>
+            <div id="current-status">CONECTANDO AL BACKEND...</div>
+            <div id="server-url">localhost:5000</div>
+        </div>
+
+        <div class="main-content">
+            <div class="panel">
+                <h2>💬 INTERFAZ COGNITIVA PRINCIPAL</h2>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message system-message">
+                            <strong>SISTEMA:</strong> Inicializando módulos de auto-programación...
+                        </div>
+                        <div class="message ai-message">
+                            <strong>ASV-A:</strong> ¡Sistema de auto-programación activo! Puedo generar código, analizar patrones y optimizar procesos. ¿En qué puedo asistirte?
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="user-input" placeholder="Escribe tu comando o solicitud de código..." autocomplete="off">
+                        <button onclick="sendMessage()">EJECUTAR</button>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="suggestAction('generar función JavaScript para validar email')">📧 VALIDAR EMAIL</button>
+                    <button class="action-btn" onclick="suggestAction('crear algoritmo de ordenamiento eficiente')">🔢 ORDENAMIENTO</button>
+                    <button class="action-btn" onclick="suggestAction('optimizar código para mejor rendimiento')">⚡ OPTIMIZAR</button>
+                    <button class="action-btn" onclick="suggestAction('analizar patrones en este conjunto de datos')">📊 ANALIZAR</button>
+                    <button class="action-btn" onclick="suggestAction('generar API REST con Node.js')">🌐 API REST</button>
+                    <button class="action-btn" onclick="clearChat()">🔄 LIMPIAR</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>⚙️ PANEL DE AUTO-PROGRAMACIÓN</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <strong>BACKEND STATUS</strong>
+                        <div id="backend-status">CONECTANDO...</div>
+                    </div>
+                    <div class="data-item">
+                        <strong>MODO EJECUCIÓN</strong>
+                        <div id="execution-mode">AUTO-PROGRAMACIÓN</div>
+                    </div>
+                    <div class="data-item">
+                        <strong>USUARIO ID</strong>
+                        <div id="user-id-display">---</div>
+                    </div>
+                    <div class="data-item">
+                        <strong>LENGUAJES SOPORTADOS</strong>
+                        <div>JS, Python, HTML, CSS</div>
+                    </div>
+                </div>
+                
+                <div class="auto-programming">
+                    <h3>🧠 MÓDULO COGNITIVO ACTIVO</h3>
+                    <p>Capacidades de auto-programación:</p>
+                    <ul style="margin: 10px 0 10px 20px; font-size: 0.9rem;">
+                        <li>Generación de código inteligente</li>
+                        <li>Análisis y optimización automática</li>
+                        <li>Detección de patrones y algoritmos</li>
+                        <li>Debugging y resolución de errores</li>
+                    </ul>
+                    
+                    <div class="code-block" id="code-output">
+                        // El código generado aparecerá aquí...
+                    </div>
+                    
+                    <button class="action-btn" onclick="executeGeneratedCode()" style="width: 100%; margin-top: 10px;">
+                        🚀 EJECUTAR CÓDIGO GENERADO
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>ASV-A AURION COVRA AI | SISTEMA DE AUTO-PROGRAMACIÓN v3.0 | 🧠 COGNITIVE AI ACTIVE</p>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN PRINCIPAL ---
+        const API_URL = 'http://localhost:5000/chat';
+        const HEALTH_URL = 'http://localhost:5000/health';
+        let currentUserId = 'user_' + Math.random().toString(36).substr(2, 9);
+        let generatedCode = '';
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('user-id-display').textContent = currentUserId.substring(0, 8) + '...';
+            document.getElementById('user-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendMessage();
+            });
+            checkConnection();
+        });
+
+        // --- FUNCIONES PRINCIPALES ---
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addMessage('user', message);
+            input.value = '';
+            updateSystemStatus('🔄 PROCESANDO SOLICITUD...');
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: message, 
+                        user_id: currentUserId 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.response) {
+                    // Procesar respuesta y detectar si es código
+                    processAIResponse(data.response, message);
+                    updateSystemStatus('✅ RESPUESTA RECIBIDA');
+                } else {
+                    addMessage('ai', '❌ Error: ' + (data.error || 'Respuesta vacía'));
+                    updateSystemStatus('❌ ERROR EN RESPUESTA');
+                }
+                
+            } catch (error) {
+                addMessage('ai', '❌ Error de conexión. Verifica que el servidor Flask esté ejecutándose en puerto 5000.');
+                updateSystemStatus('❌ SERVIDOR NO DISPONIBLE');
+                
+                // Simular respuesta de auto-programación si el servidor no está disponible
+                simulateAutoProgrammingResponse(message);
+            }
+        }
+
+        function processAIResponse(response, originalMessage) {
+            // Detectar si la respuesta contiene código
+            if (response.includes('```') || 
+                originalMessage.toLowerCase().includes('generar') ||
+                originalMessage.toLowerCase().includes('código') ||
+                originalMessage.toLowerCase().includes('función') ||
+                originalMessage.toLowerCase().includes('algoritmo')) {
+                
+                // Extraer código si está entre ```
+                const codeMatch = response.match(/```(?:javascript|js)?\s*([\s\S]*?)```/);
+                if (codeMatch) {
+                    generatedCode = codeMatch[1].trim();
+                    displayGeneratedCode(generatedCode);
+                    addMessage('ai', '✅ He generado el código solicitado. Revisa el panel de auto-programación.');
+                } else {
+                    // Si no hay código formateado, mostrar toda la respuesta
+                    addMessage('ai', response);
+                }
+            } else {
+                addMessage('ai', response);
+            }
+        }
+
+        function simulateAutoProgrammingResponse(message) {
+            // Simulador de auto-programación cuando el backend no está disponible
+            const lowerMessage = message.toLowerCase();
+            let simulatedResponse = '';
+            let code = '';
+            
+            if (lowerMessage.includes('email') || lowerMessage.includes('correo')) {
+                code = `function validarEmail(email) {\n  const regex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\n  return regex.test(email);\n}\n\n// Ejemplo de uso:\nconsole.log(validarEmail("usuario@ejemplo.com")); // true\nconsole.log(validarEmail("invalid.email")); // false`;
+                simulatedResponse = 'He generado una función para validar emails usando expresiones regulares.';
+            } 
+            else if (lowerMessage.includes('ordenamiento') || lowerMessage.includes('sort')) {
+                code = `function quickSort(arr) {\n  if (arr.length <= 1) return arr;\n  \n  const pivot = arr[Math.floor(arr.length / 2)];\n  const left = [];\n  const right = [];\n  const equal = [];\n  \n  for (let element of arr) {\n    if (element < pivot) left.push(element);\n    else if (element > pivot) right.push(element);\n    else equal.push(element);\n  }\n  \n  return [...quickSort(left), ...equal, ...quickSort(right)];\n}\n\n// Ejemplo:\nconst numeros = [64, 34, 25, 12, 22, 11, 90];\nconsole.log("Original:", numeros);\nconsole.log("Ordenado:", quickSort(numeros));`;
+                simulatedResponse = 'He implementado el algoritmo QuickSort, eficiente para grandes conjuntos de datos.';
+            }
+            else if (lowerMessage.includes('api') || lowerMessage.includes('rest')) {
+                code = `const express = require('express');\nconst app = express();\napp.use(express.json());\n\n// Base de datos en memoria\nlet users = [];\n\n// GET /users\napp.get('/users', (req, res) => {\n  res.json(users);\n});\n\n// POST /users\napp.post('/users', (req, res) => {\n  const newUser = {\n    id: users.length + 1,\n    ...req.body\n  };\n  users.push(newUser);\n  res.status(201).json(newUser);\n});\n\napp.listen(3000, () => {\n  console.log('API REST ejecutándose en puerto 3000');\n});`;
+                simulatedResponse = 'He creado una API REST básica con Node.js y Express.';
+            }
+            else {
+                simulatedResponse = 'He procesado tu solicitud. Para generar código específico, incluye términos como "generar", "función" o "algoritmo" en tu mensaje.';
+            }
+            
+            if (code) {
+                generatedCode = code;
+                displayGeneratedCode(code);
+            }
+            
+            addMessage('ai', `🧠 [MODO SIMULACIÓN] ${simulatedResponse}`);
+            updateSystemStatus('🔶 MODO SIMULACIÓN ACTIVO');
+        }
+
+        function displayGeneratedCode(code) {
+            const codeBlock = document.getElementById('code-output');
+            codeBlock.textContent = code;
+            codeBlock.style.border = '1px solid var(--neon-green)';
+        }
+
+        function executeGeneratedCode() {
+            if (!generatedCode) {
+                addMessage('system', '⚠️ No hay código generado para ejecutar.');
+                return;
+            }
+            
+            addMessage('system', '🚀 Ejecutando código generado...');
+            
+            try {
+                // Para JavaScript, podemos usar eval (con precaución)
+                if (generatedCode.includes('function') || generatedCode.includes('const') || generatedCode.includes('let')) {
+                    // Crear un contexto seguro para la ejecución
+                    const safeEval = new Function(generatedCode);
+                    safeEval();
+                    addMessage('system', '✅ Código ejecutado correctamente.');
+                } else {
+                    addMessage('system', '📝 Código listo para implementar.');
+                }
+            } catch (error) {
+                addMessage('system', `❌ Error al ejecutar: ${error.message}`);
+            }
+        }
+
+        // --- FUNCIONES AUXILIARES ---
+        function addMessage(sender, text) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            
+            let messageClass = 'ai-message';
+            let senderName = '🤖 ASV-A';
+            
+            if (sender === 'user') {
+                messageClass = 'user-message';
+                senderName = '👤 TÚ';
+            } else if (sender === 'system') {
+                messageClass = 'system-message';
+                senderName = '⚡ SISTEMA';
+            }
+            
+            messageDiv.className = `message ${messageClass}`;
+            const formattedText = text.replace(/\n/g, '<br>');
+            messageDiv.innerHTML = `<strong>${senderName}:</strong> ${formattedText}`;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function suggestAction(action) {
+            document.getElementById('user-input').value = action;
+            document.getElementById('user-input').focus();
+        }
+
+        function clearChat() {
+            document.getElementById('chat-messages').innerHTML = `
+                <div class="message system-message">
+                    <strong>SISTEMA:</strong> Chat limpiado. Sistema de auto-programación listo.
+                </div>
+            `;
+            document.getElementById('code-output').textContent = '// El código generado aparecerá aquí...';
+            document.getElementById('code-output').style.border = 'none';
+            generatedCode = '';
+            updateSystemStatus('🔄 CHAT LIMPIADO');
+        }
+
+        function updateSystemStatus(status) {
+            document.getElementById('current-status').textContent = status;
+            document.getElementById('backend-status').textContent = status;
+        }
+
+        async function checkConnection() {
+            try {
+                const response = await fetch(HEALTH_URL);
+                if (response.ok) {
+                    updateSystemStatus('🟢 CONECTADO AL BACKEND');
+                    document.getElementById('execution-mode').textContent = 'AUTO-PROGRAMACIÓN';
+                    document.getElementById('execution-mode').style.color = 'var(--neon-green)';
+                } else {
+                    updateSystemStatus('🔴 BACKEND NO RESPONDE');
+                }
+            } catch (error) {
+                updateSystemStatus('🔶 MODO SIMULACIÓN ACTIVO');
+                document.getElementById('execution-mode').textContent = 'MODO SIMULACIÓN';
+                document.getElementById('execution-mode').style.color = 'var(--neon-orange)';
+            }
+            setTimeout(checkConnection, 10000); // Revisar cada 10 segundos
+        }
+    </script>
+</body>
+</html>
