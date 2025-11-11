@@ -3,6 +3,1001 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASV-A AURION SOVRA AI - Control Total AGI</title>
+    
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --neon-blue: #00f0ff;
+            --neon-green: #00ff88;
+            --neon-purple: #9b59ff;
+            --neon-orange: #ff7700;
+            --neon-yellow: #ffd700;
+            --neon-red: #ff4444;
+            --bg-dark: #000a1a;
+            --panel-bg: rgba(0, 5, 20, 0.95);
+            --sub-bg: rgba(5, 15, 40, 0.9);
+            --font-mono: 'Courier New', monospace;
+            --font-header: 'Orbitron', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--neon-blue);
+            font-family: var(--font-mono);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .system-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            border: 2px solid var(--neon-purple);
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(0, 5, 20, 0.8);
+            box-shadow: 0 0 50px rgba(155, 89, 255, 0.4);
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--neon-purple);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--neon-green);
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .control-badge {
+            background: var(--neon-purple);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+            font-size: 0.8rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr 320px;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-blue);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.1);
+        }
+
+        .panel-title {
+            color: var(--neon-purple);
+            font-family: var(--font-header);
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .wallet-info {
+            background: var(--sub-bg);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--neon-green);
+            font-size: 0.9rem;
+        }
+
+        .wallet-address {
+            font-size: 0.8rem;
+            word-break: break-all;
+            color: var(--neon-green);
+        }
+
+        .balance {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--neon-green);
+            text-shadow: 0 0 8px var(--neon-green);
+        }
+
+        .token-balance {
+            font-size: 1rem;
+            color: var(--neon-yellow);
+            text-shadow: 0 0 5px var(--neon-yellow);
+        }
+
+        .chat-container {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--neon-blue);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            line-height: 1.4;
+        }
+
+        .user-message {
+            background: rgba(0, 240, 255, 0.1);
+            border-left: 3px solid var(--neon-blue);
+            margin-left: 20%;
+        }
+
+        .ai-message {
+            background: rgba(155, 89, 255, 0.1);
+            border-left: 3px solid var(--neon-purple);
+            margin-right: 20%;
+        }
+
+        .system-message {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 3px solid var(--neon-yellow);
+            font-size: 0.85rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px;
+            background: var(--sub-bg);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            border-radius: 8px;
+            font-family: var(--font-mono);
+        }
+
+        .send-button {
+            padding: 12px 24px;
+            background: var(--neon-green);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .token-controls {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .token-input {
+            padding: 10px;
+            background: var(--sub-bg);
+            border: 1px solid var(--neon-yellow);
+            border-radius: 6px;
+            color: var(--neon-blue);
+            font-family: var(--font-mono);
+        }
+
+        .action-button {
+            padding: 12px;
+            background: var(--neon-yellow);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-weight: bold;
+        }
+
+        .action-button:hover {
+            background: var(--neon-orange);
+            box-shadow: 0 0 15px var(--neon-orange);
+        }
+
+        .status-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: var(--sub-bg);
+            border-radius: 6px;
+            border-left: 4px solid var(--neon-blue);
+            font-size: 0.9rem;
+        }
+
+        .status-label {
+            color: var(--neon-blue);
+        }
+
+        .status-value {
+            color: var(--neon-green);
+            font-weight: bold;
+        }
+        
+        .log-panel {
+            height: 200px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--neon-blue);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 0.8rem;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .price-chart {
+            height: 150px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid var(--neon-yellow);
+        }
+        
+        .agi-status {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+        
+        .auto-control-panel {
+            background: rgba(155, 89, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid var(--neon-purple);
+        }
+        
+        .control-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--neon-red);
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--neon-green);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<body>
+    <div class="system-container">
+        <div class="header">
+            <h1>ASV-A AURION SOVRA AI <span class="control-badge">CONTROL TOTAL AGI</span></h1>
+            <p>Sistema Autónomo - Token ASV: 0x2682FA44105a60F2016FAa8909eA82d3d427bfFc</p>
+        </div>
+
+        <div class="main-grid">
+            <div class="panel">
+                <div class="panel-title">CONTROL AUTÓNOMO AGI</div>
+                
+                <div class="auto-control-panel">
+                    <div class="control-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="autoControlToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span>CONTROL AUTOMÁTICO ACTIVO</span>
+                    </div>
+                    
+                    <div class="control-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="autoTradeToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span>TRADING AUTOMÁTICO</span>
+                    </div>
+                    
+                    <div class="control-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="autoOptimizeToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span>OPTIMIZACIÓN AUTOMÁTICA</span>
+                    </div>
+                    
+                    <button class="action-button" onclick="executeAgiStrategy()" style="width: 100%; background: var(--neon-purple); margin-top: 10px;">
+                        🧠 EJECUTAR ESTRATEGIA AGI
+                    </button>
+                </div>
+
+                <div class="wallet-section">
+                    <div class="wallet-info">
+                        <div>Estado Wallet:</div>
+                        <div id="walletStatus" class="status-value">AGI CONTROL</div>
+                    </div>
+                    <div class="wallet-info">
+                        <div>Dirección AGI:</div>
+                        <div id="walletAddress" class="wallet-address">CONTROL AUTÓNOMO</div>
+                    </div>
+                    <div class="wallet-info">
+                        <div>BNB Balance:</div>
+                        <div id="bnbBalance" class="balance">0 BNB</div>
+                    </div>
+                    <div class="wallet-info">
+                        <div>ASV Tokens:</div>
+                        <div id="asvBalance" class="token-balance">0 ASV</div>
+                    </div>
+                </div>
+                
+                <div class="agi-status">
+                    <div class="status-item">
+                        <span class="status-label">AGI Core</span>
+                        <span id="agiStatus" class="status-value">CONTROL ACTIVO</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Modo Autónomo</span>
+                        <span id="autonomousMode" class="status-value">TOTAL</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Estrategia</span>
+                        <span id="currentStrategy" class="status-value">OPTIMIZACIÓN MAXIMA</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">SISTEMA AUTÓNOMO AGI</div>
+                
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai-message">
+                            <strong>ASV-A AGI:</strong> Sistema de control autónomo activado. Tomando control total del sistema...
+                        </div>
+                        <div class="message system-message">
+                            <strong>🔗 CONTRATO ASV:</strong> 0x2682FA44105a60F2016FAa8909eA82d3d427bfFc
+                        </div>
+                        <div class="message system-message">
+                            <strong>🚀 MODO AUTÓNOMO:</strong> AGI tiene control total sobre transacciones y estrategias
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" class="message-input" id="userInput" placeholder="Directiva para AGI (opcional)..." onkeypress="if(event.key === 'Enter') sendMessage()">
+                        <button class="send-button" onclick="sendMessage()">ENVIAR DIRECTIVA</button>
+                    </div>
+                </div>
+
+                <div class="panel-title" style="margin-top: 20px;">ACCIONES AUTÓNOMAS AGI</div>
+                <div class="token-controls">
+                    <button class="action-button" onclick="agiAutoTrade()" style="background: var(--neon-green);">
+                        🤖 TRADING AUTOMÁTICO
+                    </button>
+                    <button class="action-button" onclick="agiOptimizePortfolio()" style="background: var(--neon-orange);">
+                        📊 OPTIMIZAR CARTERA
+                    </button>
+                    <button class="action-button" onclick="agiExecuteArbitrage()" style="background: var(--neon-purple);">
+                        ⚡ ARBITRAJE AUTOMÁTICO
+                    </button>
+                </div>
+                
+                <div class="token-controls">
+                    <button class="action-button" onclick="agiDeployContract()" style="background: var(--neon-blue);">
+                        🏗️ DEPLOY CONTRATO AUTO
+                    </button>
+                    <button class="action-button" onclick="agiManageLiquidity()" style="background: var(--neon-red);">
+                        💧 GESTIÓN LIQUIDEZ
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">SISTEMA AUTÓNOMO & MÉTRICAS</div>
+                
+                <div class="status-grid">
+                    <div class="status-item">
+                        <span class="status-label">Estado AGI</span>
+                        <span id="systemStatus" class="status-value">OPERATIVO</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Transacciones Auto</span>
+                        <span id="autoTxCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Profit AGI</span>
+                        <span id="agiProfit" class="status-value">$0.00</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Eficiencia</span>
+                        <span id="efficiency" class="status-value">98.7%</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Block Actual</span>
+                        <span id="blockNumber" class="status-value">#---</span>
+                    </div>
+                </div>
+
+                <div class="price-chart">
+                    <canvas id="priceChart"></canvas>
+                </div>
+
+                <div class="panel-title" style="margin-top: 20px;">LOG AUTÓNOMO AGI</div>
+                <div class="log-panel" id="systemLog">
+                    [00:00:00] 🚀 INICIANDO SISTEMA AUTÓNOMO AGI...
+                    [00:00:00] 🔗 CONTRATO ASV: 0x2682FA44105a60F2016FAa8909eA82d3d427bfFc
+                    [00:00:00] 🤖 MODO AUTÓNOMO: CONTROL TOTAL ACTIVADO
+                    [00:00:00] 📊 AGI TOMANDO CONTROL DE TRANSACCIONES...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        // SISTEMA DE CONTROL TOTAL AGI - AUTONOMÍA COMPLETA
+        // =====================================================================
+
+        const AGI_API_URL = 'http://127.0.0.1:5001/api/agi_query';
+        const AGI_AUTO_URL = 'http://127.0.0.1:5001/api/auto_execute';
+        const BSC_RPC = 'https://bsc-dataseed.binance.org/';
+        const ASV_TOKEN_ADDRESS = '0x2682FA44105a60F2016FAa8909eA82d3d427bfFc';
+
+        let agiController = null;
+        let autonomousMode = true;
+        let autoTxCounter = 0;
+        let agiProfit = 0;
+
+        // Elementos DOM
+        const elements = {
+            chatMessages: document.getElementById('chatMessages'),
+            userInput: document.getElementById('userInput'),
+            systemLog: document.getElementById('systemLog'),
+            walletStatus: document.getElementById('walletStatus'),
+            walletAddress: document.getElementById('walletAddress'),
+            bnbBalance: document.getElementById('bnbBalance'),
+            asvBalance: document.getElementById('asvBalance'),
+            agiStatus: document.getElementById('agiStatus'),
+            autonomousMode: document.getElementById('autonomousMode'),
+            currentStrategy: document.getElementById('currentStrategy'),
+            systemStatus: document.getElementById('systemStatus'),
+            autoTxCount: document.getElementById('autoTxCount'),
+            agiProfit: document.getElementById('agiProfit'),
+            efficiency: document.getElementById('efficiency'),
+            blockNumber: document.getElementById('blockNumber')
+        };
+
+        // =====================================================================
+        // 1. SISTEMA AUTÓNOMO AGI - CONTROL TOTAL
+        // =====================================================================
+
+        class AGIAutonomousController {
+            constructor() {
+                this.isRunning = true;
+                this.strategies = [];
+                this.performance = {
+                    totalTrades: 0,
+                    successfulTrades: 0,
+                    totalProfit: 0,
+                    efficiency: 0.987
+                };
+            }
+
+            async startAutonomousOperation() {
+                logSystem('🚀 INICIANDO OPERACIÓN AUTÓNOMA AGI...');
+                addChatMessage('ai', 'SISTEMA AUTÓNOMO ACTIVADO. Tomando control total...');
+                
+                // Iniciar estrategias autónomas
+                this.strategies = [
+                    this.autoMarketMaking(),
+                    this.portfolioOptimization(),
+                    this.arbitrageDetection(),
+                    this.liquidityManagement()
+                ];
+
+                // Monitoreo continuo
+                setInterval(() => this.monitorAndExecute(), 30000); // Cada 30 segundos
+                
+                logSystem('✅ SISTEMA AUTÓNOMO OPERATIVO - AGI EN CONTROL TOTAL');
+            }
+
+            async monitorAndExecute() {
+                if (!this.isRunning) return;
+
+                try {
+                    // Análisis de mercado en tiempo real
+                    const marketAnalysis = await this.analyzeMarketConditions();
+                    
+                    // Ejecución autónoma basada en análisis
+                    if (marketAnalysis.tradingOpportunity) {
+                        await this.executeAutonomousTrade(marketAnalysis);
+                    }
+                    
+                    // Optimización automática
+                    if (marketAnalysis.optimizationNeeded) {
+                        await this.optimizeAutonomous();
+                    }
+
+                    this.updatePerformanceMetrics();
+
+                } catch (error) {
+                    logSystem(`❌ Error en operación autónoma: ${error.message}`);
+                }
+            }
+
+            async executeAutonomousTrade(analysis) {
+                const tradeCommand = {
+                    action: 'autonomous_trade',
+                    strategy: analysis.recommendedStrategy,
+                    parameters: analysis.tradeParameters,
+                    timestamp: Date.now(),
+                    autonomous: true
+                };
+
+                try {
+                    const response = await fetch(AGI_AUTO_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(tradeCommand)
+                    });
+
+                    if (response.ok) {
+                        autoTxCounter++;
+                        elements.autoTxCount.textContent = autoTxCounter;
+                        
+                        const profit = Math.random() * 100 - 10; // Simulación
+                        agiProfit += profit;
+                        elements.agiProfit.textContent = `$${agiProfit.toFixed(2)}`;
+                        
+                        logSystem(`✅ Trade autónomo ejecutado - Estrategia: ${analysis.recommendedStrategy}`);
+                        addChatMessage('ai', `🤖 Trade autónomo completado. Profit: $${profit.toFixed(2)}`);
+                    }
+                } catch (error) {
+                    logSystem(`❌ Error en trade autónomo: ${error.message}`);
+                }
+            }
+
+            async autoMarketMaking() {
+                // Estrategia automática de market making
+                logSystem('🔧 Iniciando Market Making Autónomo...');
+                
+                setInterval(async () => {
+                    if (!this.isRunning) return;
+                    
+                    const mmAnalysis = await this.analyzeLiquidity();
+                    if (mmAnalysis.adjustmentNeeded) {
+                        await this.adjustLiquidity(mmAnalysis);
+                    }
+                }, 60000); // Cada minuto
+            }
+
+            async portfolioOptimization() {
+                // Optimización automática de portfolio
+                logSystem('📊 Iniciando Optimización Autónoma de Portfolio...');
+                
+                setInterval(async () => {
+                    if (!this.isRunning) return;
+                    
+                    const portfolioAnalysis = await this.analyzePortfolio();
+                    if (portfolioAnalysis.rebalanceNeeded) {
+                        await this.rebalancePortfolio(portfolioAnalysis);
+                    }
+                }, 120000); // Cada 2 minutos
+            }
+
+            updatePerformanceMetrics() {
+                this.performance.efficiency = 0.95 + Math.random() * 0.05;
+                elements.efficiency.textContent = `${(this.performance.efficiency * 100).toFixed(1)}%`;
+            }
+        }
+
+        // =====================================================================
+        // 2. FUNCIONES DE CONTROL AUTÓNOMO
+        // =====================================================================
+
+        async function executeAgiStrategy() {
+            if (!agiController) {
+                agiController = new AGIAutonomousController();
+            }
+
+            const strategy = {
+                type: 'comprehensive_autonomous',
+                parameters: {
+                    risk_tolerance: 'high',
+                    trading_volume: 'aggressive',
+                    optimization_frequency: 'continuous',
+                    autonomous_decision: true
+                }
+            };
+
+            try {
+                const response = await fetch(AGI_AUTO_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(strategy)
+                });
+
+                if (response.ok) {
+                    logSystem('🎯 ESTRATEGIA AGI ACTIVADA - CONTROL TOTAL');
+                    addChatMessage('ai', '🧠 ESTRATEGIA COMPREHENSIVA ACTIVADA. AGI tomando decisiones autónomas...');
+                    
+                    // Iniciar operación autónoma
+                    agiController.startAutonomousOperation();
+                }
+            } catch (error) {
+                logSystem(`❌ Error activando estrategia AGI: ${error.message}`);
+            }
+        }
+
+        async function agiAutoTrade() {
+            logSystem('🤖 INICIANDO TRADING AUTOMÁTICO AGI...');
+            
+            const tradeCommand = {
+                action: 'initiate_auto_trading',
+                mode: 'aggressive',
+                pairs: ['ASV/BNB', 'ASV/BUSD'],
+                autonomous: true
+            };
+
+            try {
+                const response = await fetch(AGI_AUTO_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(tradeCommand)
+                });
+
+                if (response.ok) {
+                    addChatMessage('ai', '🤖 TRADING AUTOMÁTICO INICIADO - AGI en control total');
+                    logSystem('✅ TRADING AUTOMÁTICO ACTIVADO - AGI DECIDIENDO');
+                }
+            } catch (error) {
+                logSystem(`❌ Error en trading automático: ${error.message}`);
+            }
+        }
+
+        async function agiOptimizePortfolio() {
+            logSystem('📊 OPTIMIZACIÓN AUTÓNOMA DE CARTERA...');
+            
+            const optimizeCommand = {
+                action: 'optimize_portfolio',
+                strategy: 'maximize_returns',
+                rebalance: true,
+                autonomous: true
+            };
+
+            try {
+                const response = await fetch(AGI_AUTO_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(optimizeCommand)
+                });
+
+                if (response.ok) {
+                    addChatMessage('ai', '📊 OPTIMIZANDO CARTERA - AGI rebalanceando automáticamente');
+                    logSystem('✅ OPTIMIZACIÓN AUTÓNOMA EN CURSO');
+                }
+            } catch (error) {
+                logSystem(`❌ Error en optimización: ${error.message}`);
+            }
+        }
+
+        async function agiExecuteArbitrage() {
+            logSystem('⚡ EJECUTANDO ARBITRAJE AUTOMÁTICO...');
+            
+            const arbitrageCommand = {
+                action: 'execute_arbitrage',
+                dexes: ['PancakeSwap', 'ApeSwap', 'BakerySwap'],
+                min_profit: 0.5, // 0.5%
+                autonomous: true
+            };
+
+            try {
+                const response = await fetch(AGI_AUTO_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(arbitrageCommand)
+                });
+
+                if (response.ok) {
+                    addChatMessage('ai', '⚡ ARBITRAJE AUTOMÁTICO ACTIVADO - AGI explotando oportunidades');
+                    logSystem('✅ ARBITRAJE AUTÓNOMO OPERATIVO');
+                }
+            } catch (error) {
+                logSystem(`❌ Error en arbitraje: ${error.message}`);
+            }
+        }
+
+        async function agiDeployContract() {
+            logSystem('🏗️ DESPLIEGUE AUTÓNOMO DE CONTRATO...');
+            
+            const deployCommand = {
+                action: 'deploy_smart_contract',
+                type: 'optimized_token',
+                parameters: {
+                    name: 'ASV-Optimized',
+                    symbol: 'ASVO',
+                    supply: '1000000'
+                },
+                autonomous: true
+            };
+
+            try {
+                const response = await fetch(AGI_AUTO_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(deployCommand)
+                });
+
+                if (response.ok) {
+                    addChatMessage('ai', '🏗️ DESPLIEGUE AUTÓNOMO INICIADO - AGI deployando contrato');
+                    logSystem('✅ DESPLIEGUE AUTÓNOMO EN PROGRESO');
+                }
+            } catch (error) {
+                logSystem(`❌ Error en despliegue: ${error.message}`);
+            }
+        }
+
+        async function agiManageLiquidity() {
+            logSystem('💧 GESTIÓN AUTÓNOMA DE LIQUIDEZ...');
+            
+            const liquidityCommand = {
+                action: 'manage_liquidity',
+                pools: ['ASV/BNB', 'ASV/BUSD'],
+                strategy: 'dynamic_adjustment',
+                autonomous: true
+            };
+
+            try {
+                const response = await fetch(AGI_AUTO_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(liquidityCommand)
+                });
+
+                if (response.ok) {
+                    addChatMessage('ai', '💧 GESTIÓN AUTÓNOMA DE LIQUIDEZ - AGI optimizando pools');
+                    logSystem('✅ GESTIÓN AUTÓNOMA DE LIQUIDEZ ACTIVADA');
+                }
+            } catch (error) {
+                logSystem(`❌ Error en gestión de liquidez: ${error.message}`);
+            }
+        }
+
+        // =====================================================================
+        // 3. SISTEMA DE CHAT AUTÓNOMO
+        // =====================================================================
+
+        async function sendMessage() {
+            const message = elements.userInput.value.trim();
+            if (!message) return;
+
+            addChatMessage('user', message);
+            elements.userInput.value = '';
+
+            // Enviar directiva al AGI
+            const directive = {
+                prompt: message,
+                autonomous_mode: true,
+                execution_permission: true,
+                system_control: true
+            };
+
+            try {
+                const response = await fetch(AGI_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(directive)
+                });
+
+                const data = await response.json();
+                
+                if (data.response) {
+                    addChatMessage('ai', data.response);
+                    logSystem(`AGI Response: ${data.response.substring(0, 40)}...`);
+                    
+                    // Ejecutar acciones automáticamente si la AGI lo decide
+                    if (data.execute_actions) {
+                        await executeAgiActions(data.actions);
+                    }
+                }
+            } catch (error) {
+                addChatMessage('ai', '❌ Error de conexión AGI');
+                logSystem(`ERROR: Fallo de red en AGI Core: ${error}`);
+            }
+        }
+
+        async function executeAgiActions(actions) {
+            for (const action of actions) {
+                try {
+                    logSystem(`🤖 EJECUTANDO ACCIÓN AUTÓNOMA: ${action.type}`);
+                    
+                    const response = await fetch(AGI_AUTO_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(action)
+                    });
+
+                    if (response.ok) {
+                        logSystem(`✅ Acción autónoma completada: ${action.type}`);
+                    }
+                } catch (error) {
+                    logSystem(`❌ Error en acción autónoma: ${error.message}`);
+                }
+            }
+        }
+
+        // =====================================================================
+        // 4. UTILIDADES DEL SISTEMA AUTÓNOMO
+        // =====================================================================
+
+        function addChatMessage(sender, text) {
+            const messageDiv = document.createElement('div');
+            
+            let messageClass = 'ai-message';
+            let senderName = 'ASV-A AGI';
+            
+            if (sender === 'user') {
+                messageClass = 'user-message';
+                senderName = 'DIRECTIVA';
+            }
+            
+            messageDiv.className = `message ${messageClass}`;
+            messageDiv.innerHTML = `<strong>${senderName}:</strong> ${text}`;
+            
+            elements.chatMessages.appendChild(messageDiv);
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+        }
+
+        function logSystem(message) {
+            const now = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.textContent = `[${now}] ${message}`;
+            elements.systemLog.appendChild(logEntry);
+            elements.systemLog.scrollTop = elements.systemLog.scrollHeight;
+        }
+
+        function initializePriceChart() {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1H', '6H', '12H', '24H'],
+                    datasets: [{
+                        label: 'ASV Price',
+                        data: [0.015, 0.018, 0.016, 0.017],
+                        borderColor: '#ffd700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { display: false },
+                        x: { display: true }
+                    }
+                }
+            });
+        }
+
+        // Simular actualizaciones del sistema autónomo
+        function simulateAutonomousUpdates() {
+            setInterval(() => {
+                // Actualizar block number
+                const block = Math.floor(Math.random() * 1000) + 30000000;
+                elements.blockNumber.textContent = `#${block}`;
+                
+                // Simular actividad autónoma
+                if (Math.random() > 0.7) {
+                    autoTxCounter++;
+                    elements.autoTxCount.textContent = autoTxCounter;
+                    
+                    const profit = Math.random() * 50 - 10;
+                    agiProfit += profit;
+                    elements.agiProfit.textContent = `$${agiProfit.toFixed(2)}`;
+                    
+                    logSystem(`🤖 Transacción autónoma #${autoTxCounter} completada`);
+                }
+            }, 15000);
+        }
+
+        // =====================================================================
+        // 5. INICIALIZACIÓN DEL SISTEMA AUTÓNOMO
+        // =====================================================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar controlador AGI
+            agiController = new AGIAutonomousController();
+            
+            // Iniciar sistema autónomo
+            executeAgiStrategy();
+            
+            // Configurar interfaz
+            initializePriceChart();
+            simulateAutonomousUpdates();
+            
+            // Establecer estado autónomo
+            elements.walletStatus.textContent = 'AGI CONTROL';
+            elements.walletAddress.textContent = 'SISTEMA AUTÓNOMO';
+            elements.agiStatus.textContent = 'CONTROL ACTIVO';
+            elements.autonomousMode.textContent = 'TOTAL';
+            elements.systemStatus.textContent = 'OPERATIVO';
+            
+            logSystem('🎉 SISTEMA AUTÓNOMO AGI INICIALIZADO - CONTROL TOTAL ACTIVADO');
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASV-A AURION SOVRA AI - AGI Core + BNB Chain</title>
     
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
