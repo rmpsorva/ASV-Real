@@ -3,6 +3,760 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASV-A AURION COVRA AI - Cognitive OS Web3</title>
+    
+    <!-- Web3 Libraries -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.min.js"></script>
+    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    
+    <!-- Three.js for 3D Avatar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    
+    <!-- Speech Synthesis -->
+    <script src="https://cdn.jsdelivr.net/npm/artyom.js@1.0.6/build/artyom.js"></script>
+    
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ff9d;
+            --deep-space: #0a0a1f;
+            --cosmic-purple: #1a1a2f;
+            --matrix-green: #00ff41;
+            --gold: #ffd700;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background: var(--deep-space);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 243, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 255, 0.05) 0%, transparent 20%);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.3);
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+        
+        .wallet-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .wallet-info {
+            background: rgba(10, 10, 31, 0.7);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+        
+        .connect-btn {
+            background: transparent;
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+        
+        .connect-btn:hover {
+            background: rgba(0, 243, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+        }
+        
+        /* Main Dashboard */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            height: 70vh;
+        }
+        
+        .panel {
+            background: rgba(10, 10, 31, 0.7);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .panel-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel-title::before {
+            content: "▶";
+            color: var(--neon-green);
+            font-size: 0.8rem;
+        }
+        
+        /* Avatar Section */
+        .avatar-container {
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #avatarCanvas {
+            width: 100%;
+            height: 70%;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(255, 0, 255, 0.1));
+        }
+        
+        .avatar-controls {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 30%;
+        }
+        
+        .mood-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .mood-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .mood-fill {
+            height: 100%;
+            background: var(--neon-green);
+            width: 75%;
+            border-radius: 4px;
+        }
+        
+        .voice-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .voice-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        
+        /* AI Chat Section */
+        .chat-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            padding: 12px 15px;
+            border-radius: 12px;
+            max-width: 85%;
+            position: relative;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            background: rgba(0, 243, 255, 0.15);
+            border: 1px solid var(--neon-cyan);
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .ai-message {
+            background: rgba(255, 0, 255, 0.15);
+            border: 1px solid var(--neon-pink);
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-sender {
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            opacity: 0.7;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+        
+        .send-btn {
+            background: var(--neon-cyan);
+            color: var(--deep-space);
+            border: none;
+            border-radius: 8px;
+            padding: 0 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .send-btn:hover {
+            background: var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+        }
+        
+        /* Token Metrics */
+        .token-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .metric-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--neon-green);
+            margin: 10px 0;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: rgba(10, 10, 31, 0.7);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 243, 255, 0.3);
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--neon-cyan);
+        }
+        
+        .feature-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--neon-green);
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            border-top: 1px solid rgba(0, 243, 255, 0.3);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+        
+        /* Typing Indicator */
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 8px 12px;
+            background: rgba(255, 0, 255, 0.1);
+            border-radius: 12px;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--neon-pink);
+            border-radius: 50%;
+            animation: typingPulse 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typingPulse {
+            0%, 60%, 100% { transform: scale(1); opacity: 0.7; }
+            30% { transform: scale(1.2); opacity: 1; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .token-metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <h1>ASV-A AURION COVRA AI</h1>
+            </div>
+            <div class="wallet-section">
+                <div class="wallet-info" id="walletInfo">No conectado</div>
+                <button class="connect-btn" id="connectWallet">CONECTAR WALLET</button>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard">
+            <!-- Avatar Panel -->
+            <div class="panel avatar-container">
+                <div id="avatarCanvas">
+                    <!-- 3D Avatar will be rendered here -->
+                    <div style="display: flex; justify-content: center; align-items: center; height: 100%; color: rgba(255,255,255,0.7);">
+                        <div style="text-align: center;">
+                            <div style="font-size: 4rem; margin-bottom: 10px;">🤖</div>
+                            <div>AVATAR COGNITIVO</div>
+                            <div style="font-size: 0.8rem; margin-top: 5px;">Cargando sistema de comunicación...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="avatar-controls">
+                    <div class="mood-indicator">
+                        <span>Estado Cognitivo:</span>
+                        <div class="mood-bar">
+                            <div class="mood-fill"></div>
+                        </div>
+                        <span>75%</span>
+                    </div>
+                    <div class="voice-controls">
+                        <button class="voice-btn" id="startListening">🎤 Hablar</button>
+                        <button class="voice-btn" id="stopListening">⏹️ Parar</button>
+                        <button class="voice-btn" id="synthesizeSpeech">🔊 Voz</button>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+                        <div>Nivel de Conexión: <span id="connectionLevel">Alta</span></div>
+                        <div>Tokens ASV-A Consumidos: <span id="tokensUsed">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Panel -->
+            <div class="panel chat-container">
+                <div class="panel-title">COGNITIVE INTERFACE - COMUNICACIÓN HUMANO-AI</div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai-message">
+                        <div class="message-sender">AURION COVRA AI</div>
+                        <div>Hola, soy AURION COVRA AI, tu asistente cognitivo especializado en Web3 y blockchain. He sido diseñado para ayudarte a navegar el ecosistema descentralizado y maximizar el potencial de tu token ASV-A. ¿En qué puedo asistirte hoy?</div>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="messageInput" placeholder="Escribe tu mensaje o pregunta sobre Web3, blockchain, ASV-A...">
+                    <button class="send-btn" id="sendMessage">ENVIAR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Token Metrics -->
+        <div class="token-metrics">
+            <div class="metric-card">
+                <div class="metric-label">BALANCE ASV-A</div>
+                <div class="metric-value" id="tokenBalance">0</div>
+                <div class="metric-label">Tokens</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">PODER COGNITIVO</div>
+                <div class="metric-value" id="cognitivePower">0</div>
+                <div class="metric-label">Unidades</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">ESTADO RED</div>
+                <div class="metric-value" id="networkStatus">Web3</div>
+                <div class="metric-label">Conectado</div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <div class="feature-title">WEB3 NATIVE</div>
+                <div>Integración completa con blockchain, wallets y contratos inteligentes</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <div class="feature-title">COGNITIVE OS</div>
+                <div>Sistema operativo cognitivo que aprende y se adapta a tus necesidades</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💎</div>
+                <div class="feature-title">TOKEN ECONOMY</div>
+                <div>Economía impulsada por ASV-A para acceso a funcionalidades avanzadas</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            ASV-A AURION COVRA AI - Cognitive Operating System | Web3 Native AI Platform | 2024
+        </footer>
+    </div>
+
+    <script>
+        // Web3 Integration
+        class ASVWeb3Integration {
+            constructor() {
+                this.provider = null;
+                this.signer = null;
+                this.userAddress = null;
+                this.asvContract = null;
+                this.isConnected = false;
+            }
+
+            async connectWallet() {
+                if (typeof window.ethereum !== 'undefined') {
+                    try {
+                        await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        this.provider = new ethers.providers.Web3Provider(window.ethereum);
+                        this.signer = this.provider.getSigner();
+                        this.userAddress = await this.signer.getAddress();
+                        this.isConnected = true;
+                        
+                        document.getElementById('walletInfo').innerHTML = 
+                            `Conectado: ${this.userAddress.substring(0, 6)}...${this.userAddress.substring(38)}`;
+                        
+                        await this.loadTokenData();
+                        this.addWelcomeMessage();
+                        return true;
+                    } catch (error) {
+                        console.error('Error conectando wallet:', error);
+                        return false;
+                    }
+                } else {
+                    alert('Por favor instala MetaMask para usar esta aplicación!');
+                    return false;
+                }
+            }
+
+            async loadTokenData() {
+                // ASV-A Contract Address on BSC
+                const ASV_ADDRESS = '0x2682FA44105a60F2016FAa8909eA82d3d427bfFc';
+                
+                // Minimal ABI for balance checking
+                const minimalABI = [
+                    "function balanceOf(address) view returns (uint256)",
+                    "function name() view returns (string)",
+                    "function symbol() view returns (string)",
+                    "function totalSupply() view returns (uint256)"
+                ];
+                
+                try {
+                    this.asvContract = new ethers.Contract(ASV_ADDRESS, minimalABI, this.signer);
+                    
+                    const balance = await this.asvContract.balanceOf(this.userAddress);
+                    const formattedBalance = ethers.utils.formatUnits(balance, 18);
+                    
+                    document.getElementById('tokenBalance').textContent = parseFloat(formattedBalance).toFixed(2);
+                    
+                    // Calculate cognitive power based on token balance
+                    const cognitivePower = Math.sqrt(parseFloat(formattedBalance)) * 100;
+                    document.getElementById('cognitivePower').textContent = cognitivePower.toFixed(2);
+                    
+                } catch (error) {
+                    console.error('Error cargando datos del token:', error);
+                }
+            }
+
+            addWelcomeMessage() {
+                const chatMessages = document.getElementById('chatMessages');
+                const welcomeMsg = document.createElement('div');
+                welcomeMsg.className = 'message ai-message';
+                welcomeMsg.innerHTML = `
+                    <div class="message-sender">AURION COVRA AI</div>
+                    <div>Wallet conectada exitosamente. He detectado tu balance de ASV-A. Ahora puedes acceder a todas las funcionalidades cognitivas del sistema. ¿En qué área de Web3 o blockchain te gustaría profundizar hoy?</div>
+                `;
+                chatMessages.appendChild(welcomeMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // AI Chat System
+        class AIChatSystem {
+            constructor() {
+                this.conversationHistory = [];
+                this.isTyping = false;
+                this.initializeEventListeners();
+            }
+
+            initializeEventListeners() {
+                document.getElementById('sendMessage').addEventListener('click', () => {
+                    this.sendMessage();
+                });
+
+                document.getElementById('messageInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.sendMessage();
+                    }
+                });
+
+                // Voice controls
+                document.getElementById('startListening').addEventListener('click', () => {
+                    this.startVoiceRecognition();
+                });
+
+                document.getElementById('stopListening').addEventListener('click', () => {
+                    this.stopVoiceRecognition();
+                });
+
+                document.getElementById('synthesizeSpeech').addEventListener('click', () => {
+                    this.synthesizeLastMessage();
+                });
+            }
+
+            sendMessage() {
+                const input = document.getElementById('messageInput');
+                const message = input.value.trim();
+                
+                if (message === '') return;
+
+                this.addMessageToChat('user', message);
+                input.value = '';
+                
+                // Simulate AI thinking
+                this.showTypingIndicator();
+                
+                setTimeout(() => {
+                    this.hideTypingIndicator();
+                    this.generateAIResponse(message);
+                }, 1500);
+            }
+
+            addMessageToChat(sender, text) {
+                const chatMessages = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = sender === 'user' ? 'message user-message' : 'message ai-message';
+                
+                const senderName = sender === 'user' ? 'Tú' : 'AURION COVRA AI';
+                messageDiv.innerHTML = `
+                    <div class="message-sender">${senderName}</div>
+                    <div>${text}</div>
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Add to conversation history
+                this.conversationHistory.push({ sender, text });
+            }
+
+            showTypingIndicator() {
+                if (this.isTyping) return;
+                
+                this.isTyping = true;
+                const chatMessages = document.getElementById('chatMessages');
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'typing-indicator';
+                typingDiv.id = 'typingIndicator';
+                typingDiv.innerHTML = `
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                `;
+                
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            hideTypingIndicator() {
+                this.isTyping = false;
+                const typingIndicator = document.getElementById('typingIndicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+
+            generateAIResponse(userMessage) {
+                // Advanced AI response generation based on user message
+                let response = '';
+                const lowerMessage = userMessage.toLowerCase();
+                
+                if (lowerMessage.includes('hola') || lowerMessage.includes('hi') || lowerMessage.includes('hello')) {
+                    response = "¡Hola! Soy AURION COVRA AI, tu asistente especializado en Web3 y blockchain. Veo que tienes conexión con tu wallet. ¿En qué puedo ayudarte relacionado con descentralización, smart contracts o tu token ASV-A?";
+                } else if (lowerMessage.includes('asv') || lowerMessage.includes('token')) {
+                    response = "El token ASV-A es el corazón de nuestro ecosistema cognitivo. Con él puedes acceder a funcionalidades avanzadas, gobernanza del sistema y recompensas por participación. Tu balance actual te otorga un nivel específico de poder cognitivo dentro de la red.";
+                } else if (lowerMessage.includes('web3') || lowerMessage.includes('blockchain')) {
+                    response = "Web3 representa la evolución hacia una internet descentralizada. Nuestro sistema está construido sobre principios de soberanía digital, donde tú controlas tus datos, identidad y activos. La blockchain nos permite crear contratos inteligentes autónomos y sistemas de gobernanza comunitaria.";
+                } else if (lowerMessage.includes('contrato') || lowerMessage.includes('smart contract')) {
+                    response = "Los smart contracts son programas autoejecutables en blockchain. Tu token ASV-A funciona mediante un contrato inteligente en BNB Chain que gestiona transferencias, staking y gobernanza. ¿Te gustaría que profundice en algún aspecto específico de los contratos inteligentes?";
+                } else if (lowerMessage.includes('decentral') || lowerMessage.includes('descentral')) {
+                    response = "La descentralización es el núcleo de nuestra filosofía. A diferencia de las IA centralizadas, yo opero en una red distribuida donde ningún ente central controla el sistema. Tu identidad y datos permanecen bajo tu control absoluto a través de tecnología blockchain.";
+                } else if (lowerMessage.includes('funci') || lowerMessage.includes('qué puedes hacer')) {
+                    response = "Puedo asistirte en: Análisis de transacciones blockchain, explicación de conceptos Web3, gestión de tu portfolio ASV-A, desarrollo de smart contracts, estrategias de descentralización, y mucho más. Mi conocimiento especializado combina las tres principales áreas de IA existentes aplicadas al ecosistema blockchain.";
+                } else {
+                    // Default intelligent response
+                    response = "Interesante pregunta sobre '" + userMessage + "'. Desde mi perspectiva especializada en Web3, puedo analizar esto considerando los principios de descentralización, seguridad blockchain y economía tokenómica. ¿Te gustaría que profundice en algún aspecto específico relacionado con blockchain o tu token ASV-A?";
+                }
+                
+                this.addMessageToChat('ai', response);
+                
+                // Update tokens used
+                const tokensUsed = document.getElementById('tokensUsed');
+                tokensUsed.textContent = parseInt(tokensUsed.textContent) + response.length;
+            }
+
+            startVoiceRecognition() {
+                this.addMessageToChat('ai', "Sistema de reconocimiento de voz activado. Por favor, habla ahora...");
+                // In a real implementation, this would integrate with the Web Speech API
+            }
+
+            stopVoiceRecognition() {
+                this.addMessageToChat('ai', "Reconocimiento de voz desactivado.");
+            }
+
+            synthesizeLastMessage() {
+                const lastMessage = this.conversationHistory
+                    .filter(msg => msg.sender === 'ai')
+                    .pop();
+                    
+                if (lastMessage) {
+                    this.addMessageToChat('ai', "Reproduciendo último mensaje: " + lastMessage.text);
+                    // In a real implementation, this would use speech synthesis
+                }
+            }
+        }
+
+        // Initialize everything when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const asvWeb3 = new ASVWeb3Integration();
+            const aiChat = new AIChatSystem();
+            
+            document.getElementById('connectWallet').addEventListener('click', function() {
+                asvWeb3.connectWallet();
+            });
+            
+            // Simulate initial connection for demo purposes
+            setTimeout(() => {
+                document.getElementById('networkStatus').textContent = "Web3 Conectado";
+            }, 2000);
+        });
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASV-A SOVRA - Panel de Control BNB Chain</title>
     
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
